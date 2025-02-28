@@ -1,6 +1,8 @@
 const db = require("../connection");
 const format = require("pg-format"); 
-const { convertTimestampToDate } = require('../seeds/utils')
+// const { convertTimestampToDate } = require('../seeds/utils') - no longer needed as we have new Date()
+const { mapCommentsToArticleIds } = require('../seeds/utils'); 
+
 
 const seed = async ({ topicData, userData, articleData, commentData }) => {
   try {
@@ -86,10 +88,13 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
       VALUES %L RETURNING *;`,
       formattedArticles
     );
-    await db.query(articleQuery);
+    const insertedArticles = await db.query(articleQuery);
+
+    const updatedCommentData = mapCommentsToArticleIds(commentData, insertedArticles.rows)
+  
 
     // Inserting the comments
-    const formattedComments = commentData.map(
+    const formattedComments = updatedCommentData.map(
       ({ article_id, body, votes, author, created_at }) => [
         article_id,
         body,
