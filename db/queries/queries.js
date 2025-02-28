@@ -7,8 +7,6 @@ const getAllUsers = async () => {
       return rows;
     } catch (err) {
       console.log("Error fetching users:", err);
-    } finally {
-      db.end();
     }
   };
 
@@ -20,8 +18,6 @@ const getCodingArticles = async () => {
         return rows;
     } catch (err) {
         console.log("Error fetching coding articles:", err);
-    } finally {
-        db.end()
     }
 }
 
@@ -33,8 +29,6 @@ const getCommentsWithNegativeVotes = async () => {
         return rows;
     } catch (err) {
         console.log("Error fetching comments with votes below zero:", err)
-    } finally {
-        db.end()
     }
 }
 
@@ -42,26 +36,22 @@ const getAllTopics = async () => {
     try {
         const { rows } = await db.query(
             "SELECT * FROM topics");
-        console.log("All topics:", row);
+        console.log("All topics:", rows);
         return rows;
     } catch (err) {
         console.log("Error fetching all topics:", err)
-    } finally {
-        db.end()
     }
 }
 
 const getGrumpy19Articles = async () => {
     try {
         const { rows } = await db.query(
-            "SELECT * FROM articles WHERE author = 'grumpy19"
+            "SELECT * FROM articles WHERE author = 'grumpy19';"
         )
         console.log("Articles written by grumpy19:", rows)
         return rows
     } catch (err) {
         console.log("Error fetching Grumpy19's articles:", err)
-    } finally {
-        db.end()
     }
 }
 
@@ -74,10 +64,25 @@ const getCommentsWithMoreThan10Votes = async () => {
         return rows
     } catch (err) { 
         console.log("Error fetching comments with more than 10 votes")
-    } finally {
-        db.end()
     }
 }
 
+if (require.main === module) {
+    (async () => {
+      await getAllUsers();
+      await getCodingArticles();
+      await getCommentsWithNegativeVotes();
+      await getAllTopics();
+      await getGrumpy19Articles();
+      await getCommentsWithMoreThan10Votes();
+      db.end(); 
+    })();
+  }
 
-module.exports = { getAllUsers, getCommentsWithNegativeVotes, getCodingArticles, getAllTopics, getGrumpy19Articles, getCommentsWithMoreThan10Votes } 
+
+/* module.exports = { getAllUsers,
+    getCommentsWithNegativeVotes,
+    getCodingArticles,
+    getAllTopics,
+    getGrumpy19Articles,
+    getCommentsWithMoreThan10Votes } */
