@@ -41,13 +41,13 @@ describe("GET /api/topics", () => {
         });
       });
   });
-  test("400: Returns error message where endpoint does not exist", () => {
+  test("404: Returns error message when route is invalid", () => {
     return request(app)
       .get("/api/tapicsss")
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("bad request...");
+        expect(msg).toBe("path not found...");
       });
   });
 });
