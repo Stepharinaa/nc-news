@@ -24,3 +24,30 @@ describe("GET /api", () => {
       });
   });
 });
+
+describe("GET /api/topics", () => {
+  test("200: Responds with array of all topics", () => {
+    return request(app)
+      .get("/api/topics")
+      .expect(200)
+      .then(({ body }) => {
+        const topics = body.topics;
+        expect(topics).toBeInstanceOf(Array);
+        expect(topics.length).toBeGreaterThan(0);
+
+        topics.forEach((topic) => {
+          expect(typeof topic.slug).toBe("string");
+          expect(typeof topic.description).toBe("string");
+        });
+      });
+  });
+  test("404: Returns error message when route is invalid", () => {
+    return request(app)
+      .get("/api/tapicsss")
+      .expect(404)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("path not found...");
+      });
+  });
+});

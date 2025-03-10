@@ -17,14 +17,16 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
         description VARCHAR(1000) NOT NULL,
         img_url VARCHAR(1000)
       );
+      `);
 
-      CREATE TABLE users (
+    await db.query(`CREATE TABLE users (
         username VARCHAR(300) PRIMARY KEY,
         name VARCHAR(300) NOT NULL,
         avatar_url VARCHAR(1000)
       );
+      `);
 
-      CREATE TABLE articles (
+    await db.query(`CREATE TABLE articles (
         article_id SERIAL PRIMARY KEY,
         title VARCHAR(300) NOT NULL,
         topic VARCHAR(300) REFERENCES topics(slug) ON DELETE CASCADE,
@@ -33,9 +35,10 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         votes INT DEFAULT 0,
         article_img_url VARCHAR(1000)
-      );
+      )
+      `);
 
-      CREATE TABLE comments (
+    await db.query(`CREATE TABLE comments (
         comment_id SERIAL PRIMARY KEY,
         article_id INT REFERENCES articles(article_id) ON DELETE CASCADE,
         body TEXT NOT NULL,
