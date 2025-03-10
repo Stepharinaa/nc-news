@@ -1,9 +1,31 @@
+const { getArticlebyArticleID } = require("../controllers/controllers");
 const db = require("../db/connection");
 
 const fetchTopics = () => {
   return db.query(`SELECT * FROM topics`).then(({ rows }) => {
     return rows;
   });
+};
+
+const fetchArticles = () => {
+  return db
+    .query(
+      `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
+      COUNT(comments.comment_id) AS comment_count
+      FROM articles
+      LEFT JOIN comments ON articles.article_id = comments.article_id
+      GROUP BY articles.article_id
+      ORDER BY articles.created_at DESC;`
+    )
+    .then(({ rows }) => {
+      // console.log(rows, "<--- THESE ARE THE ROWS");
+      return rows.map((article) => {
+        return {
+          ...article,
+          created_at: new Date(article.created_at).getTime(),
+        };
+      });
+    });
 };
 
 const fetchArticlebyArticleID = (article_id) => {
@@ -23,4 +45,4 @@ const fetchArticlebyArticleID = (article_id) => {
     });
 };
 
-module.exports = { fetchTopics, fetchArticlebyArticleID };
+module.exports = { fetchTopics, fetchArticlebyArticleID, fetchArticles };

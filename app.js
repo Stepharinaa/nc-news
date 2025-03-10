@@ -4,6 +4,7 @@ const db = require("./db/connection");
 const {
   getTopics,
   getArticlebyArticleID,
+  getArticles,
 } = require("./controllers/controllers");
 const {
   handlePSQLErrors,
@@ -18,6 +19,8 @@ const app = express();
 app.get("/api", (req, res) => {
   res.status(200).send({ endpoints: endpoints });
 });
+
+app.get("/api/articles/", getArticles);
 
 app.get("/api/topics", getTopics);
 
