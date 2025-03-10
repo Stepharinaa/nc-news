@@ -17,6 +17,10 @@ app.get("/api", (req, res) => {
 
 app.get("/api/topics", getTopics);
 
+app.all("*", (req, res) => {
+  res.status(404).send({ msg: "path not found..." });
+});
+
 app.use(handlePSQLErrors);
 
 module.exports = app;
