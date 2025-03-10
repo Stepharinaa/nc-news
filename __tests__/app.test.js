@@ -53,7 +53,7 @@ describe("GET /api/topics", () => {
 });
 
 describe("GET /api/articles", () => {
-  test("200: Responds with an array of articles for all articles, including comment_count", () => {
+  test("200: Responds with an array of articles for all articles sorted by date in descending order, also including comment_count", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -71,6 +71,15 @@ describe("GET /api/articles", () => {
           expect(typeof article.article_img_url).toBe("string");
           expect(typeof article.comment_count).toBe("string");
         });
+      });
+  });
+  test("404: Returns error message when route is invalid", () => {
+    return request(app)
+      .get("/api/articlaass")
+      .expect(404)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("path not found...");
       });
   });
 });
