@@ -51,3 +51,24 @@ describe("GET /api/topics", () => {
       });
   });
 });
+
+describe("GET /api/articles/:articleid", () => {
+  test("200: Responds with article with relevant ID", () => {
+    return request(app)
+      .get("/api/articles/3")
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article.title).toBe("Eight pug gifs that remind me of mitch");
+        expect(article.topic).toBe("mitch");
+        expect(article.author).toBe("icellusedkars");
+        expect(article.body).toBe("some gifs");
+        expect(new Date(article.created_at).getTime()).toBe(1604394720000);
+        expect(article.votes).toBe(0);
+        expect(article.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+        expect(article.article_id).toBe(3);
+      });
+  });
+});

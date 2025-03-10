@@ -9,4 +9,14 @@ const getTopics = (req, res, next) => {
     .catch(next);
 };
 
-module.exports = { getTopics };
+const getArticlebyArticleID = (req, res, next) => {
+  const { article_id } = req.params;
+  model
+    .fetchArticlebyArticleID(article_id)
+    .then((article) => {
+      res.status(200).send({ article: article });
+    })
+    .catch(next);
+};
+
+module.exports = { getTopics, getArticlebyArticleID };
