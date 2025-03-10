@@ -53,12 +53,13 @@ describe("GET /api/topics", () => {
 });
 
 describe("GET /api/articles/:articleid", () => {
-  test("200: Responds with article with relevant ID", () => {
+  test("200: Responds with article object relating to relevant article ID", () => {
     return request(app)
       .get("/api/articles/3")
       .expect(200)
       .then(({ body }) => {
         const article = body.article;
+        expect(article).toBeInstanceOf(Object);
         expect(article.title).toBe("Eight pug gifs that remind me of mitch");
         expect(article.topic).toBe("mitch");
         expect(article.author).toBe("icellusedkars");
