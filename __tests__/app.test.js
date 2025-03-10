@@ -24,3 +24,21 @@ describe("GET /api", () => {
       });
   });
 });
+
+describe("GET /api/topics", () => {
+  test("200: Responds with array of all topics", () => {
+    return request(app)
+      .get("/api/topics")
+      .expect(200)
+      .then(({ body }) => {
+        const topics = body.topics;
+        expect(topics).toBeInstanceOf(Array);
+        expect(topics.length).toBeGreaterThan(0);
+
+        topics.forEach((topic) => {
+          expect(typeof topic.slug).toBe("string");
+          expect(typeof topic.description).toBe("string");
+        });
+      });
+  });
+});
