@@ -10,7 +10,9 @@ const fetchArticlebyArticleID = (article_id) => {
   return db
     .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
     .then(({ rows }) => {
-      if (!rows.length) return null;
+      if (!rows.length) {
+        return Promise.reject({ status: 404, msg: "article not found" });
+      }
       const article = rows[0];
 
       // Need to convert created_At string to be timestamp:

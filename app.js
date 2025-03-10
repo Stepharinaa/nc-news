@@ -7,6 +7,7 @@ const {
 } = require("./controllers/controllers");
 const {
   handlePSQLErrors,
+  handleCustomErrors,
 } = require("./controllers/error-handling-controllers");
 
 const app = express();
@@ -26,6 +27,6 @@ app.all("*", (req, res) => {
   res.status(404).send({ msg: "path not found..." });
 });
 
-app.use(handlePSQLErrors);
+app.use(handlePSQLErrors, handleCustomErrors);
 
 module.exports = app;
