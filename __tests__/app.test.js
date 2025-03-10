@@ -72,13 +72,22 @@ describe("GET /api/articles/:articleid", () => {
         expect(article.article_id).toBe(3);
       });
   });
-  test("404: Returns error message when article ID/route is invalid", () => {
+  test("404: Returns error when article ID does not exist", () => {
     return request(app)
       .get("/api/articles/100000")
       .expect(404)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("not found");
+        expect(msg).toBe("article not found");
+      });
+  });
+  test("400: Returns error when article ID is not a number", () => {
+    return request(app)
+      .get("/api/articles/notAnIDorNumber")
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("invalid article ID");
       });
   });
 });
