@@ -1,7 +1,10 @@
 const db = require("../../db/connection");
-const format = require("pg-format");
 
 const mapCommentsToArticleIds = (commentData, articleData) => {
+  if (!articleData || !Array.isArray(articleData)) {
+    console.error("Error: articleData is missing or not an array", articleData);
+    return [];
+  }
   const articleIdLookup = articleData.reduce((lookup, article) => {
     lookup[article.title] = article.article_id;
     return lookup;

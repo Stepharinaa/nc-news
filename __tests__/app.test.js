@@ -41,4 +41,13 @@ describe("GET /api/topics", () => {
         });
       });
   });
+  test("400: Returns error message where endpoint does not exist", () => {
+    return request(app)
+      .get("/api/tapicsss")
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("bad request...");
+      });
+  });
 });
