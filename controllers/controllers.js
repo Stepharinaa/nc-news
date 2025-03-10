@@ -10,7 +10,9 @@ const getTopics = (req, res, next) => {
 };
 
 const getArticlebyArticleID = (req, res, next) => {
-  const { article_id } = req.params;
+  // console.log(req.params, "<-- THIS IS REQ.PARAMS");
+  const article_id = req.params.articleid;
+  // console.log(article_id, "<-- THIS IS ARTICLE ID");
   model
     .fetchArticlebyArticleID(article_id)
     .then((article) => {
