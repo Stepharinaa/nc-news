@@ -1,9 +1,13 @@
 const express = require("express");
 const endpoints = require("./endpoints.json");
 const db = require("./db/connection");
-const { getTopics } = require("./controllers/controllers");
+const {
+  getTopics,
+  getArticlebyArticleID,
+} = require("./controllers/controllers");
 const {
   handlePSQLErrors,
+  handleCustomErrors,
 } = require("./controllers/error-handling-controllers");
 
 const app = express();
@@ -17,10 +21,12 @@ app.get("/api", (req, res) => {
 
 app.get("/api/topics", getTopics);
 
+app.get("/api/articles/:articleid", getArticlebyArticleID);
+
 app.all("*", (req, res) => {
   res.status(404).send({ msg: "path not found..." });
 });
 
-app.use(handlePSQLErrors);
+app.use(handlePSQLErrors, handleCustomErrors);
 
 module.exports = app;
