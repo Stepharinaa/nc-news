@@ -4,10 +4,12 @@ const db = require("./db/connection");
 const {
   getTopics,
   getArticlebyArticleID,
+  getArticles,
 } = require("./controllers/controllers");
 const {
   handlePSQLErrors,
   handleCustomErrors,
+  handleServerErrors,
 } = require("./controllers/error-handling-controllers");
 
 const app = express();
@@ -19,6 +21,8 @@ app.get("/api", (req, res) => {
   res.status(200).send({ endpoints: endpoints });
 });
 
+app.get("/api/articles", getArticles);
+
 app.get("/api/topics", getTopics);
 
 app.get("/api/articles/:articleid", getArticlebyArticleID);
@@ -27,6 +31,10 @@ app.all("*", (req, res) => {
   res.status(404).send({ msg: "path not found..." });
 });
 
-app.use(handlePSQLErrors, handleCustomErrors);
+app.use(handlePSQLErrors);
+
+app.use(handleCustomErrors);
+
+app.use(handleServerErrors);
 
 module.exports = app;

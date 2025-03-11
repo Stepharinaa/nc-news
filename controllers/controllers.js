@@ -9,6 +9,18 @@ const getTopics = (req, res, next) => {
     .catch(next);
 };
 
+const getArticles = (req, res, next) => {
+  let { author, topic, sort_by, order } = req.query;
+  // console.log(req.query, "<-- THIS IS REQ");
+
+  model
+    .fetchArticles(author, topic, sort_by, order)
+    .then((articles) => {
+      res.status(200).send({ articles: articles });
+    })
+    .catch(next);
+};
+
 const getArticlebyArticleID = (req, res, next) => {
   // console.log(req.params, "<-- THIS IS REQ.PARAMS");
   const article_id = req.params.articleid;
@@ -21,4 +33,4 @@ const getArticlebyArticleID = (req, res, next) => {
     .catch(next);
 };
 
-module.exports = { getTopics, getArticlebyArticleID };
+module.exports = { getTopics, getArticlebyArticleID, getArticles };
