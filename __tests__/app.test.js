@@ -6,7 +6,6 @@ const seed = require("../db/seeds/seed.js");
 const db = require("../db/connection.js");
 const data = require("../db/data/test-data");
 
-/* Set up your beforeEach & afterAll functions here  */
 beforeEach(() => {
   return seed(data);
 });
@@ -53,7 +52,7 @@ describe("GET /api/topics", () => {
 });
 
 describe("GET /api/articles", () => {
-  test("200: Responds with an array of articles for all articles sorted by date in descending order, also including comment_count", () => {
+  test("200: Responds with an array of articles for all articles, including comment_count", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -73,53 +72,144 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("404: Returns error message when route is invalid", () => {
+  test("200: Responds with all articles sorted by date in descending order", () => {
     return request(app)
-      .get("/api/articlaass")
-      .expect(404)
-      .then(({ body }) => {
-        const msg = body.msg;
-        expect(msg).toBe("path not found...");
-      });
-  });
-});
-
-describe("GET /api/articles/:articleid", () => {
-  test("200: Responds with article object relating to relevant article ID", () => {
-    return request(app)
-      .get("/api/articles/3")
+      .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        const article = body.article;
-        expect(article).toBeInstanceOf(Object);
-        expect(article.title).toBe("Eight pug gifs that remind me of mitch");
-        expect(article.topic).toBe("mitch");
-        expect(article.author).toBe("icellusedkars");
-        expect(article.body).toBe("some gifs");
-        expect(new Date(article.created_at).getTime()).toBe(1604394720000);
-        expect(article.votes).toBe(0);
-        expect(article.article_img_url).toBe(
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-        );
-        expect(article.article_id).toBe(3);
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+        expect(articles).toBeInstanceOf(Array);
       });
   });
-  test("404: Returns error when article ID does not exist", () => {
-    return request(app)
-      .get("/api/articles/100000")
-      .expect(404)
-      .then(({ body }) => {
-        const msg = body.msg;
-        expect(msg).toBe("article not found");
-      });
+
+  describe("GET /api/articles with query parameters", () => {
+    test("200: Responds with articles array sorted by votes ascending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes&order=ASC")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.articles;
+          expect(articles).toBeSortedBy("votes", { descending: false });
+        });
+    });
+    test("400: Returns error message when given invalid sort_by column", () => {
+      return request(app)
+        .get("/api/articles?sort_by=random_invalid_column&order=ASC")
+        .expect(400)
+        .then(({ body }) => {
+          const msg = body.msg;
+          expect(msg).toBe("invalid sort_by column");
+        });
+    });
+    test("400: Returns error message when given invalid order query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes&order=RANDOMGIVENORDER")
+        .expect(400)
+        .then(({ body }) => {
+          const msg = body.msg;
+          expect(msg).toBe("invalid order value");
+        });
+    });
+    test("404: Returns error message when route is invalid", () => {
+      return request(app)
+        .get("/api/articlaass")
+        .expect(404)
+        .then(({ body }) => {
+          const msg = body.msg;
+          expect(msg).toBe("path not found...");
+        });
+    });
+    test("200: Responds with articles array filtered by author", () => {
+      return request(app)
+        .get("/api/articles?author=icellusedkars")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.articles;
+          expect(articles).toBeInstanceOf(Array);
+          articles.forEach((article) => {
+            expect(article.author).toBe("icellusedkars");
+          });
+        });
+    });
+    test("404: Returns error message when author does not exist", () => {
+      return request(app)
+        .get("/api/articles?author=stephiscool")
+        .expect(404)
+        .then(({ body }) => {
+          const msg = body.msg;
+          expect(msg).toBe("no articles found for given query/queries");
+        });
+    });
+    test("200: Responds with articles array filtered by topic", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.articles;
+          expect(articles).toBeInstanceOf(Array);
+          articles.forEach((article) => {
+            expect(article.topic).toBe("mitch");
+          });
+        });
+    });
+    test("404: Returns error message when there are no articles of that topic", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(404)
+        .then(({ body }) => {
+          const msg = body.msg;
+          expect(msg).toBe("no articles found for given query/queries");
+        });
+    });
+    test("404: Returns error message when topic does not exist", () => {
+      return request(app)
+        .get("/api/articles?topic=nonexistentleagueoflegendstopic")
+        .expect(404)
+        .then(({ body }) => {
+          const msg = body.msg;
+          expect(msg).toBe("no articles found for given query/queries");
+        });
+    });
   });
-  test("400: Returns error when article ID is not a number", () => {
-    return request(app)
-      .get("/api/articles/notAnIDorNumber")
-      .expect(400)
-      .then(({ body }) => {
-        const msg = body.msg;
-        expect(msg).toBe("invalid article ID");
-      });
+
+  describe("GET /api/articles/:articleid", () => {
+    test("200: Responds with article object relating to relevant article ID", () => {
+      return request(app)
+        .get("/api/articles/3")
+        .expect(200)
+        .then(({ body }) => {
+          const article = body.article;
+          expect(article).toBeInstanceOf(Object);
+          expect(article.title).toBe("Eight pug gifs that remind me of mitch");
+          expect(article.topic).toBe("mitch");
+          expect(article.author).toBe("icellusedkars");
+          expect(article.body).toBe("some gifs");
+          expect(new Date(article.created_at).getTime()).toBe(1604394720000);
+          expect(article.votes).toBe(0);
+          expect(article.article_img_url).toBe(
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+          );
+          expect(article.article_id).toBe(3);
+        });
+    });
+    test("404: Returns error when article ID does not exist", () => {
+      return request(app)
+        .get("/api/articles/100000")
+        .expect(404)
+        .then(({ body }) => {
+          const msg = body.msg;
+          expect(msg).toBe("article not found");
+        });
+    });
+    test("400: Returns error when article ID is not a number", () => {
+      return request(app)
+        .get("/api/articles/notAnIDorNumber")
+        .expect(400)
+        .then(({ body }) => {
+          const msg = body.msg;
+          expect(msg).toBe("invalid article ID");
+        });
+    });
   });
 });

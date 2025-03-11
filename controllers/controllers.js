@@ -10,8 +10,11 @@ const getTopics = (req, res, next) => {
 };
 
 const getArticles = (req, res, next) => {
+  let { author, topic, sort_by, order } = req.query;
+  // console.log(req.query, "<-- THIS IS REQ");
+
   model
-    .fetchArticles()
+    .fetchArticles(author, topic, sort_by, order)
     .then((articles) => {
       res.status(200).send({ articles: articles });
     })
