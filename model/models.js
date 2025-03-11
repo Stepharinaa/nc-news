@@ -99,6 +99,9 @@ const fetchCommentsByArticleID = (article_id) => {
       [article_id]
     )
     .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "invalid article_id" });
+      }
       return rows.map((comment) => ({
         ...comment,
         created_at: new Date(comment.created_at).getTime(),

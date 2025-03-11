@@ -243,4 +243,13 @@ describe("GET /api/articles/:articleid/comments", () => {
         expect(comments).toBeSortedBy("created_at", { descending: true });
       });
   });
+  test("404: Returns error message when given invalid/non-existent article id", () => {
+    return request(app)
+      .get("/api/articles/100000/comments")
+      .expect(404)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("invalid article_id");
+      });
+  });
 });
