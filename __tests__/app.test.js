@@ -213,3 +213,52 @@ describe("GET /api/articles", () => {
     });
   });
 });
+
+describe("GET /api/articles/:articleid/comments", () => {
+  test("200: Returns array of comments for given article id", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments.length).toBeGreaterThan(0);
+
+        comments.forEach((comment) => {
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.created_at).toBe("number");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.body).toBe("string");
+          expect(typeof comment.article_id).toBe("number");
+        });
+      });
+  });
+  test("200: Comments should be returned with most recent comments first", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("404: Returns error message when article ID does not exist", () => {
+    return request(app)
+      .get("/api/articles/100000/comments")
+      .expect(404)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("article not found");
+      });
+  });
+  test("400: Returns error message when article_id is of wrong data type", () => {
+    return request(app)
+      .get("/api/articles/invalidid/comments")
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("bad request");
+      });
+  });
+});

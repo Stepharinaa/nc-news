@@ -92,4 +92,28 @@ const fetchArticlebyArticleID = (article_id) => {
     });
 };
 
-module.exports = { fetchTopics, fetchArticlebyArticleID, fetchArticles };
+const fetchCommentsByArticleID = (article_id) => {
+  if (isNaN(article_id)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  return db
+    .query(
+      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`,
+      [article_id]
+    )
+    .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({ status: 404, msg: "article not found" });
+      }
+      return rows.map((comment) => ({
+        ...comment,
+        created_at: new Date(comment.created_at).getTime(),
+      }));
+    });
+};
+module.exports = {
+  fetchTopics,
+  fetchArticlebyArticleID,
+  fetchArticles,
+  fetchCommentsByArticleID,
+};
