@@ -234,4 +234,13 @@ describe("GET /api/articles/:articleid/comments", () => {
         });
       });
   });
+  test("200: Comments should be returned with most recent comments first", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
 });
