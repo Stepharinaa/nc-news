@@ -92,4 +92,19 @@ const fetchArticlebyArticleID = (article_id) => {
     });
 };
 
-module.exports = { fetchTopics, fetchArticlebyArticleID, fetchArticles };
+const fetchCommentsByArticleID = (article_id) => {
+  return db
+    .query(`SELECT * FROM comments WHERE article_id = $1`, [article_id])
+    .then(({ rows }) => {
+      return rows.map((comment) => ({
+        ...comment,
+        created_at: new Date(comment.created_at).getTime(),
+      }));
+    });
+};
+module.exports = {
+  fetchTopics,
+  fetchArticlebyArticleID,
+  fetchArticles,
+  fetchCommentsByArticleID,
+};
