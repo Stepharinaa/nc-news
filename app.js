@@ -5,6 +5,7 @@ const {
   getTopics,
   getArticlebyArticleID,
   getArticles,
+  getCommentsByArticleID,
 } = require("./controllers/controllers");
 const {
   handlePSQLErrors,
@@ -26,6 +27,8 @@ app.get("/api/articles", getArticles);
 app.get("/api/topics", getTopics);
 
 app.get("/api/articles/:articleid", getArticlebyArticleID);
+
+app.get("/api/articles/:articleid/comments", getCommentsByArticleID);
 
 app.all("*", (req, res) => {
   res.status(404).send({ msg: "path not found..." });

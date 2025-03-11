@@ -22,9 +22,7 @@ const getArticles = (req, res, next) => {
 };
 
 const getArticlebyArticleID = (req, res, next) => {
-  // console.log(req.params, "<-- THIS IS REQ.PARAMS");
   const article_id = req.params.articleid;
-  // console.log(article_id, "<-- THIS IS ARTICLE ID");
   model
     .fetchArticlebyArticleID(article_id)
     .then((article) => {
@@ -33,4 +31,19 @@ const getArticlebyArticleID = (req, res, next) => {
     .catch(next);
 };
 
-module.exports = { getTopics, getArticlebyArticleID, getArticles };
+const getCommentsByArticleID = (req, res, next) => {
+  const article_id = req.params.articleid;
+  model
+    .fetchCommentsByArticleID(article_id)
+    .then((comments) => {
+      res.status(200).send({ comments: comments });
+    })
+    .catch(next);
+};
+
+module.exports = {
+  getTopics,
+  getArticlebyArticleID,
+  getArticles,
+  getCommentsByArticleID,
+};
