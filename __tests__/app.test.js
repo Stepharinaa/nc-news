@@ -291,8 +291,17 @@ describe("POST /api/articles/:article_id/comments", () => {
         );
       });
   });
-  /* test.todo(
-    "400: Returns error when comment provided is missing key(s)",
-    () => {}
-  );*/
+  test("400: Returns error when comment provided is missing key(s)", () => {
+    const input = {
+      username: "butter_bridge",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(input)
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("comment could not be added as field(s) are missing");
+      });
+  });
 });
