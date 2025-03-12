@@ -258,7 +258,7 @@ describe("GET /api/articles/:articleid/comments", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("bad request");
+        expect(msg).toBe("bad request...");
       });
   });
 });
@@ -442,6 +442,15 @@ describe("DELETE /api/comments/:comment_id", () => {
       .then(({ body }) => {
         const msg = body.msg;
         expect(msg).toBe("comment id does not exist");
+      });
+  });
+  test("400: Returns error if given invalid ID/data type", () => {
+    return request(app)
+      .delete("/api/comments/notAnID")
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("bad request...");
       });
   });
 });
