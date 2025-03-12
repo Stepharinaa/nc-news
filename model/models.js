@@ -113,6 +113,12 @@ const fetchCommentsByArticleID = (article_id) => {
 };
 
 const insertCommentByArticleID = (article_id, username, body) => {
+  if (!username || !body) {
+    return Promise.reject({
+      status: 400,
+      msg: "comment could not be added as field(s) are missing",
+    });
+  }
   return db
     .query(
       `
