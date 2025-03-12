@@ -130,15 +130,27 @@ const insertCommentByArticleID = (article_id, username, body) => {
       }
     })
     .then(() => {
-      return db.query(
-        `
+      return db
+        .query(`SELECT * FROM comments WHERE author = $1`, [username])
+        .then(({ rows }) => {
+          if (rows.length === 0) {
+            return Promise.reject({
+              status: 400,
+              msg: "username not found",
+            });
+          }
+        })
+        .then(() => {
+          return db.query(
+            `
     INSERT INTO comments (article_id, author, body)
     VALUES ($1, $2, $3)
     RETURNING comment_id, article_id, author AS username, body, votes, created_at`,
-        [article_id, username, body]
-      );
-    })
-    .then(({ rows }) => rows[0]);
+            [article_id, username, body]
+          );
+        })
+        .then(({ rows }) => rows[0]);
+    });
 };
 
 module.exports = {

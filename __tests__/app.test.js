@@ -318,4 +318,18 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(msg).toBe("article not found");
       });
   });
+  test("400: Returns error when username does not exist - ensures only valid users can post comments", () => {
+    const input = {
+      username: "stepharina",
+      body: "hello it's me, an unregistered user",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(input)
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("username not found");
+      });
+  });
 });
