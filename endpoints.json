@@ -1,6 +1,6 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "retrieves up a json representation of all the available endpoints of the api"
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
@@ -10,7 +10,7 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
+    "description": "retrieves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
@@ -29,7 +29,7 @@
     }
   },
   "GET /api/articles/:articleid": {
-    "description": "serves an article object relevant to articleid provided",
+    "description": "retrieves an article object relevant to articleid provided",
     "queries": [],
     "exampleResponse": {
       "article": {
@@ -44,7 +44,7 @@
     }
   },
   "GET /api/articles/:articleid/comments": {
-    "description": "serves an array of comments relevant to provided article_id, each containing a comment_id, votes, author, body, created_at and article_id",
+    "description": "retrieves an array of comments relevant to provided article_id, each containing a comment_id, votes, author, body, created_at and article_id",
     "queries": [],
     "exampleResponse": {
       "comments": [
@@ -60,16 +60,31 @@
     }
   },
   "POST /api/articles/:article_id/comments": {
-    "description": "posts an object comment to relevant article id",
+    "description": "creates and returns an object comment to relevant article id",
     "queries": [],
     "exampleResponse": {
-      "comments": {
+      "comment": {
         "comment_id": 1,
         "votes": 0,
         "author": "weegembump",
         "body": "I love League of Legends, especially as it's from hit show Arcane!",
         "created_at": "2020-11-03T09:12:00.000Z",
         "article_id": 9
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates an article object and returns updated article object",
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Eight pug gifs that remind me of mitch",
+        "topic": "mitch",
+        "body": "some gifs",
+        "created_at": "2020-11-03T09:12:00.000Z",
+        "votes": 200,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }
     }
   }
