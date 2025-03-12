@@ -453,4 +453,18 @@ describe("DELETE /api/comments/:comment_id", () => {
         expect(msg).toBe("bad request...");
       });
   });
+  test("404: Returns error if the comment has already been deleted", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(() => {
+        return request(app)
+          .delete("/api/comments/1")
+          .expect(404)
+          .then(({ body }) => {
+            const msg = body.msg;
+            expect(msg).toBe("comment id does not exist");
+          });
+      });
+  });
 });
