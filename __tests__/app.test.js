@@ -407,4 +407,15 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(msg).toBe("bad request...");
       });
   });
+  test("400: Returns error if inc_votes is of wrong data type", () => {
+    const input = { inc_votes: "hello this is a string" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(input)
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("bad request...");
+      });
+  });
 });
