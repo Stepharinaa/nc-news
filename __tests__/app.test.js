@@ -304,4 +304,18 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(msg).toBe("comment could not be added as field(s) are missing");
       });
   });
+  test("404: Returns error when article id does not exist", () => {
+    const input = {
+      username: "butter_bridge",
+      body: "yo this article was so well written!",
+    };
+    return request(app)
+      .post("/api/articles/-1/comments")
+      .send(input)
+      .expect(404)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("article not found");
+      });
+  });
 });

@@ -120,13 +120,24 @@ const insertCommentByArticleID = (article_id, username, body) => {
     });
   }
   return db
-    .query(
-      `
+    .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "article not found",
+        });
+      }
+    })
+    .then(() => {
+      return db.query(
+        `
     INSERT INTO comments (article_id, author, body)
     VALUES ($1, $2, $3)
     RETURNING comment_id, article_id, author AS username, body, votes, created_at`,
-      [article_id, username, body]
-    )
+        [article_id, username, body]
+      );
+    })
     .then(({ rows }) => rows[0]);
 };
 
