@@ -52,6 +52,17 @@ const postCommentsByArticleID = (req, res, next) => {
 };
 
 const patchVotesByArticleID = (req, res, next) => {
+  const keys = Object.keys(req.body);
+  if (!keys.length) {
+    return next({ status: 400, msg: "bad request..." });
+  }
+  if (keys.length !== 1 || keys[0] !== "inc_votes") {
+    return next({ status: 400, msg: "unexpected field in request body" });
+  }
+  if (typeof req.body.inc_votes !== "number") {
+    return next({ status: 400, msg: "inc_votes must be a number" });
+  }
+
   const { article_id } = req.params;
   const { inc_votes } = req.body;
   model
