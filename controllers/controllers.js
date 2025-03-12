@@ -41,14 +41,11 @@ const getCommentsByArticleID = (req, res, next) => {
 };
 
 const postCommentsByArticleID = (req, res, next) => {
-  console.log(req.params, "<--- THIS IS REQ.PARAMS");
-  console.log(req.body, "<--- THIS IS REQ.BODY");
   const { articleid } = req.params;
   const { username, body } = req.body;
   model
     .insertCommentByArticleID(articleid, username, body)
     .then((comment) => {
-      console.log(comment, "<--- COMMENT RETURNED FROM DB");
       res.status(201).send({ comment: comment });
     })
     .catch(next);
