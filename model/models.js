@@ -111,9 +111,23 @@ const fetchCommentsByArticleID = (article_id) => {
       }));
     });
 };
+
+const insertCommentByArticleID = (article_id, username, body) => {
+  return db
+    .query(
+      `
+    INSERT INTO comments (article_id, author, body)
+    VALUES ($1, $2, $3)
+    RETURNING comment_id, article_id, author AS username, body, votes, created_at`,
+      [article_id, username, body]
+    )
+    .then(({ rows }) => rows[0]);
+};
+
 module.exports = {
   fetchTopics,
   fetchArticlebyArticleID,
   fetchArticles,
   fetchCommentsByArticleID,
+  insertCommentByArticleID,
 };
