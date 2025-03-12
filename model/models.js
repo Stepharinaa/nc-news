@@ -113,12 +113,6 @@ const fetchCommentsByArticleID = (article_id) => {
 };
 
 const insertCommentByArticleID = (article_id, username, body) => {
-  if (!username || !body) {
-    return Promise.reject({
-      status: 400,
-      msg: "comment could not be added as field(s) are missing",
-    });
-  }
   return db
     .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
     .then(({ rows }) => {
@@ -131,7 +125,7 @@ const insertCommentByArticleID = (article_id, username, body) => {
     })
     .then(() => {
       return db
-        .query(`SELECT * FROM comments WHERE author = $1`, [username])
+        .query(`SELECT * FROM users WHERE username = $1`, [username])
         .then(({ rows }) => {
           if (!rows.length) {
             return Promise.reject({
@@ -178,6 +172,8 @@ const updateVotesByArticleID = (article_id, inc_votes) => {
     });
 };
 
+const removeCommentbyCommentID = (comment_id) => {};
+
 module.exports = {
   fetchTopics,
   fetchArticlebyArticleID,
@@ -185,4 +181,5 @@ module.exports = {
   fetchCommentsByArticleID,
   insertCommentByArticleID,
   updateVotesByArticleID,
+  removeCommentbyCommentID,
 };

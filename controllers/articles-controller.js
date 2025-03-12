@@ -1,14 +1,5 @@
 const model = require("../model/models");
 
-const getTopics = (req, res, next) => {
-  model
-    .fetchTopics()
-    .then((topics) => {
-      res.status(200).send({ topics: topics });
-    })
-    .catch(next);
-};
-
 const getArticles = (req, res, next) => {
   let { author, topic, sort_by, order } = req.query;
 
@@ -41,14 +32,27 @@ const getCommentsByArticleID = (req, res, next) => {
 };
 
 const postCommentByArticleID = (req, res, next) => {
-  const { articleid } = req.params;
+  const { article_id } = req.params;
   const { username, body } = req.body;
+
+  if (!username || !body) {
+    return next({
+      status: 400,
+      msg: "comment could not be added as field(s) are missing",
+    });
+  }
   model
-    .insertCommentByArticleID(articleid, username, body)
+    .insertCommentByArticleID(article_id, username, body)
     .then((comment) => {
       res.status(201).send({ comment: comment });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.code === "23503") {
+        next({ status: 400, msg: "username not found" });
+      } else {
+        next(err);
+      }
+    });
 };
 
 const patchVotesByArticleID = (req, res, next) => {
@@ -74,7 +78,6 @@ const patchVotesByArticleID = (req, res, next) => {
 };
 
 module.exports = {
-  getTopics,
   getArticleByArticleID,
   getArticles,
   getCommentsByArticleID,

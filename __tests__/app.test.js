@@ -430,3 +430,9 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: Deletes the given comment and responds with no content", () => {
+    return request(app).delete("/api/comments/7").expect(204);
+  });
+});
