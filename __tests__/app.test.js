@@ -258,7 +258,7 @@ describe("GET /api/articles/:articleid/comments", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("bad request");
+        expect(msg).toBe("bad request...");
       });
   });
 });
@@ -427,6 +427,44 @@ describe("PATCH /api/articles/:article_id", () => {
       .then(({ body }) => {
         const msg = body.msg;
         expect(msg).toBe("unexpected field in request body");
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: Deletes the given comment and responds with no content", () => {
+    return request(app).delete("/api/comments/7").expect(204);
+  });
+  test("404: Returns error if comment_id does not exist", () => {
+    return request(app)
+      .delete("/api/comments/1000000")
+      .expect(404)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("comment id does not exist");
+      });
+  });
+  test("400: Returns error if given invalid ID/data type", () => {
+    return request(app)
+      .delete("/api/comments/notAnID")
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("bad request...");
+      });
+  });
+  test("404: Returns error if the comment has already been deleted", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(() => {
+        return request(app)
+          .delete("/api/comments/1")
+          .expect(404)
+          .then(({ body }) => {
+            const msg = body.msg;
+            expect(msg).toBe("comment id does not exist");
+          });
       });
   });
 });

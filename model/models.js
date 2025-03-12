@@ -93,9 +93,6 @@ const fetchArticlebyArticleID = (article_id) => {
 };
 
 const fetchCommentsByArticleID = (article_id) => {
-  if (isNaN(article_id)) {
-    return Promise.reject({ status: 400, msg: "bad request" });
-  }
   return db
     .query(
       `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`,
@@ -113,12 +110,6 @@ const fetchCommentsByArticleID = (article_id) => {
 };
 
 const insertCommentByArticleID = (article_id, username, body) => {
-  if (!username || !body) {
-    return Promise.reject({
-      status: 400,
-      msg: "comment could not be added as field(s) are missing",
-    });
-  }
   return db
     .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
     .then(({ rows }) => {
@@ -131,7 +122,7 @@ const insertCommentByArticleID = (article_id, username, body) => {
     })
     .then(() => {
       return db
-        .query(`SELECT * FROM comments WHERE author = $1`, [username])
+        .query(`SELECT * FROM users WHERE username = $1`, [username])
         .then(({ rows }) => {
           if (!rows.length) {
             return Promise.reject({
@@ -178,6 +169,22 @@ const updateVotesByArticleID = (article_id, inc_votes) => {
     });
 };
 
+const removeCommentbyCommentID = (comment_id) => {
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING*;`, [
+      comment_id,
+    ])
+    .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({
+          status: 404,
+          msg: "comment id does not exist",
+        });
+      }
+      return rows[0];
+    });
+};
+
 module.exports = {
   fetchTopics,
   fetchArticlebyArticleID,
@@ -185,4 +192,5 @@ module.exports = {
   fetchCommentsByArticleID,
   insertCommentByArticleID,
   updateVotesByArticleID,
+  removeCommentbyCommentID,
 };

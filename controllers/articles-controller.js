@@ -1,14 +1,5 @@
 const model = require("../model/models");
 
-const getTopics = (req, res, next) => {
-  model
-    .fetchTopics()
-    .then((topics) => {
-      res.status(200).send({ topics: topics });
-    })
-    .catch(next);
-};
-
 const getArticles = (req, res, next) => {
   let { author, topic, sort_by, order } = req.query;
 
@@ -20,8 +11,8 @@ const getArticles = (req, res, next) => {
     .catch(next);
 };
 
-const getArticlebyArticleID = (req, res, next) => {
-  const article_id = req.params.articleid;
+const getArticleByArticleID = (req, res, next) => {
+  const { article_id } = req.params;
   model
     .fetchArticlebyArticleID(article_id)
     .then((article) => {
@@ -31,7 +22,7 @@ const getArticlebyArticleID = (req, res, next) => {
 };
 
 const getCommentsByArticleID = (req, res, next) => {
-  const article_id = req.params.articleid;
+  const { article_id } = req.params;
   model
     .fetchCommentsByArticleID(article_id)
     .then((comments) => {
@@ -40,15 +31,28 @@ const getCommentsByArticleID = (req, res, next) => {
     .catch(next);
 };
 
-const postCommentsByArticleID = (req, res, next) => {
-  const { articleid } = req.params;
+const postCommentByArticleID = (req, res, next) => {
+  const { article_id } = req.params;
   const { username, body } = req.body;
+
+  if (!username || !body) {
+    return next({
+      status: 400,
+      msg: "comment could not be added as field(s) are missing",
+    });
+  }
   model
-    .insertCommentByArticleID(articleid, username, body)
+    .insertCommentByArticleID(article_id, username, body)
     .then((comment) => {
       res.status(201).send({ comment: comment });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.code === "23503") {
+        next({ status: 400, msg: "username not found" });
+      } else {
+        next(err);
+      }
+    });
 };
 
 const patchVotesByArticleID = (req, res, next) => {
@@ -74,10 +78,9 @@ const patchVotesByArticleID = (req, res, next) => {
 };
 
 module.exports = {
-  getTopics,
-  getArticlebyArticleID,
+  getArticleByArticleID,
   getArticles,
   getCommentsByArticleID,
-  postCommentsByArticleID,
+  postCommentByArticleID,
   patchVotesByArticleID,
 };

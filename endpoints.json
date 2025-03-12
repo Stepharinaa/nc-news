@@ -1,16 +1,16 @@
 {
   "GET /api": {
-    "description": "retrieves up a json representation of all the available endpoints of the api"
+    "description": "Retrieves up a json representation of all the available endpoints of the api"
   },
   "GET /api/topics": {
-    "description": "serves an array of all topics",
+    "description": "Serves an array of all topics",
     "queries": [],
     "exampleResponse": {
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
   "GET /api/articles": {
-    "description": "retrieves an array of all articles",
+    "description": "Retrieves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
@@ -29,7 +29,7 @@
     }
   },
   "GET /api/articles/:articleid": {
-    "description": "retrieves an article object relevant to articleid provided",
+    "description": "Retrieves an article object relevant to articleid provided",
     "queries": [],
     "exampleResponse": {
       "article": {
@@ -44,7 +44,7 @@
     }
   },
   "GET /api/articles/:articleid/comments": {
-    "description": "retrieves an array of comments relevant to provided article_id, each containing a comment_id, votes, author, body, created_at and article_id",
+    "description": "Retrieves an array of comments relevant to provided article_id, each containing a comment_id, votes, author, body, created_at and article_id",
     "queries": [],
     "exampleResponse": {
       "comments": [
@@ -60,7 +60,7 @@
     }
   },
   "POST /api/articles/:article_id/comments": {
-    "description": "creates and returns an object comment to relevant article id",
+    "description": "Creates and returns an object comment to relevant article id",
     "queries": [],
     "exampleResponse": {
       "comment": {
@@ -74,7 +74,7 @@
     }
   },
   "PATCH /api/articles/:article_id": {
-    "description": "updates an article object and returns updated article object",
+    "description": "Updates an article object and returns updated article object",
     "queries": [],
     "exampleResponse": {
       "article": {
@@ -87,5 +87,8 @@
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes a comment by its ID. Responds with no content (204)."
   }
 }
