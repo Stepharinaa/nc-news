@@ -435,4 +435,13 @@ describe("DELETE /api/comments/:comment_id", () => {
   test("204: Deletes the given comment and responds with no content", () => {
     return request(app).delete("/api/comments/7").expect(204);
   });
+  test("404: Returns error if comment_id does not exist", () => {
+    return request(app)
+      .delete("/api/comments/1000000")
+      .expect(404)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("comment id does not exist");
+      });
+  });
 });

@@ -178,6 +178,12 @@ const removeCommentbyCommentID = (comment_id) => {
       comment_id,
     ])
     .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({
+          status: 404,
+          msg: "comment id does not exist",
+        });
+      }
       return rows[0];
     });
 };
