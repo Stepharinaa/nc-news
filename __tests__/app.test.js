@@ -5,6 +5,8 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const db = require("../db/connection.js");
 const data = require("../db/data/test-data");
+const Test = require("supertest/lib/test.js");
+const comments = require("../db/data/test-data/comments.js");
 
 beforeEach(() => {
   return seed(data);
@@ -259,6 +261,75 @@ describe("GET /api/articles/:articleid/comments", () => {
       .then(({ body }) => {
         const msg = body.msg;
         expect(msg).toBe("bad request");
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: Returns posted comment on relevant article", () => {
+    const input = {
+      username: "butter_bridge",
+      body: "yo this article was so well written!",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(input)
+      .expect(201)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment).toHaveProperty("comment_id");
+        expect(comment).toHaveProperty("article_id", 4);
+        expect(comment).toHaveProperty("username", "butter_bridge");
+        expect(comment).toHaveProperty(
+          "body",
+          "yo this article was so well written!"
+        );
+        expect(comment).toHaveProperty("votes", 0);
+        expect(comment).toHaveProperty("created_at");
+        expect(new Date(comment.created_at).toString()).not.toBe(
+          "Invalid Date"
+        );
+      });
+  });
+  test("400: Returns error when comment provided is missing key(s)", () => {
+    const input = {
+      username: "butter_bridge",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(input)
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("comment could not be added as field(s) are missing");
+      });
+  });
+  test("404: Returns error when article id does not exist", () => {
+    const input = {
+      username: "butter_bridge",
+      body: "yo this article was so well written!",
+    };
+    return request(app)
+      .post("/api/articles/-1/comments")
+      .send(input)
+      .expect(404)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("article not found");
+      });
+  });
+  test("400: Returns error when username does not exist - ensures only valid users can post comments", () => {
+    const input = {
+      username: "stepharina",
+      body: "hello it's me, an unregistered user",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(input)
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("username not found");
       });
   });
 });

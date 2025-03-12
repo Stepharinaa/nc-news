@@ -6,6 +6,7 @@ const {
   getArticlebyArticleID,
   getArticles,
   getCommentsByArticleID,
+  postCommentsByArticleID,
 } = require("./controllers/controllers");
 const {
   handlePSQLErrors,
@@ -15,7 +16,7 @@ const {
 
 const app = express();
 
-// Middleware I will use in future: app.use(express.json())
+app.use(express.json());
 
 // refactor this later maybe?
 app.get("/api", (req, res) => {
@@ -29,6 +30,8 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles/:articleid", getArticlebyArticleID);
 
 app.get("/api/articles/:articleid/comments", getCommentsByArticleID);
+
+app.post("/api/articles/:articleid/comments", postCommentsByArticleID);
 
 app.all("*", (req, res) => {
   res.status(404).send({ msg: "path not found..." });

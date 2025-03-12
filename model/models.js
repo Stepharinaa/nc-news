@@ -111,9 +111,52 @@ const fetchCommentsByArticleID = (article_id) => {
       }));
     });
 };
+
+const insertCommentByArticleID = (article_id, username, body) => {
+  if (!username || !body) {
+    return Promise.reject({
+      status: 400,
+      msg: "comment could not be added as field(s) are missing",
+    });
+  }
+  return db
+    .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "article not found",
+        });
+      }
+    })
+    .then(() => {
+      return db
+        .query(`SELECT * FROM comments WHERE author = $1`, [username])
+        .then(({ rows }) => {
+          if (rows.length === 0) {
+            return Promise.reject({
+              status: 400,
+              msg: "username not found",
+            });
+          }
+        })
+        .then(() => {
+          return db.query(
+            `
+    INSERT INTO comments (article_id, author, body)
+    VALUES ($1, $2, $3)
+    RETURNING comment_id, article_id, author AS username, body, votes, created_at`,
+            [article_id, username, body]
+          );
+        })
+        .then(({ rows }) => rows[0]);
+    });
+};
+
 module.exports = {
   fetchTopics,
   fetchArticlebyArticleID,
   fetchArticles,
   fetchCommentsByArticleID,
+  insertCommentByArticleID,
 };
