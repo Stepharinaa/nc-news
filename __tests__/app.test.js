@@ -415,7 +415,18 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("bad request...");
+        expect(msg).toBe("inc_votes must be a number");
+      });
+  });
+  test("400: Returns error if request body has additional/unwanted fields", () => {
+    const input = { inc_votes: 1000, name: "Steph" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(input)
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("unexpected field in request body");
       });
   });
 });
