@@ -32,6 +32,7 @@
     "queries": [],
     "exampleResponse": {
       "article": {
+        "article_id": 1,
         "title": "Eight pug gifs that remind me of mitch",
         "topic": "mitch",
         "body": "some gifs",
