@@ -93,9 +93,6 @@ const fetchArticlebyArticleID = (article_id) => {
 };
 
 const fetchCommentsByArticleID = (article_id) => {
-  if (isNaN(article_id)) {
-    return Promise.reject({ status: 400, msg: "bad request" });
-  }
   return db
     .query(
       `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`,
