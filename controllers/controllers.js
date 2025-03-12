@@ -51,10 +51,19 @@ const postCommentsByArticleID = (req, res, next) => {
     .catch(next);
 };
 
+const patchVotesByArticleID = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  model.updateVotesByArticleID(article_id, inc_votes).then((article) => {
+    res.status(200).send({ article: article });
+  });
+};
+
 module.exports = {
   getTopics,
   getArticlebyArticleID,
   getArticles,
   getCommentsByArticleID,
   postCommentsByArticleID,
+  patchVotesByArticleID,
 };
