@@ -470,6 +470,7 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
+// continue test handling tomorrow
 describe("GET /api/users", () => {
   test("200: Returns array of objects of all users", () => {
     return request(app)
@@ -486,6 +487,15 @@ describe("GET /api/users", () => {
           expect(typeof user.name).toBe("string");
           expect(typeof user.avatar_url).toBe("string");
         });
+      });
+  });
+  test("404: Returns error message when route is invalid", () => {
+    return request(app)
+      .get("/api/userssss")
+      .expect(404)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("path not found...");
       });
   });
 });
