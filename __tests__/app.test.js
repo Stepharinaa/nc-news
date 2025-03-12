@@ -477,6 +477,7 @@ describe("GET /api/users", () => {
       .expect(200)
       .then(({ body }) => {
         const users = body.users;
+
         expect(users).toBeInstanceOf(Array);
         expect(users.length).toBeGreaterThan(0);
 
