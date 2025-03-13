@@ -218,7 +218,7 @@ describe("GET /api/articles", () => {
         .expect(400)
         .then(({ body }) => {
           const msg = body.msg;
-          expect(msg).toBe("invalid article ID");
+          expect(msg).toBe("bad request...");
         });
     });
   });
