@@ -9,6 +9,7 @@
     "test": "jest --runInBand",
     "prepare": "husky install",
     "start": "node listen.js",
+    "seed-prod": "NODE_ENV=production npm run seed",
     "dev": "nodemon listen.js",
     "test-seed": "jest seed.test.js"
   },

@@ -89,8 +89,9 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
       VALUES %L RETURNING *;`,
       formattedArticles
     );
+    // console.log("Formatted Articles:", formattedArticles);
     const insertedArticles = await db.query(articleQuery);
-
+    // console.log("Inserted Articles:", insertedArticles.rows);
     const updatedCommentData = mapCommentsToArticleIds(
       commentData,
       insertedArticles.rows
