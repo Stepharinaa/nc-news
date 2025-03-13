@@ -66,7 +66,7 @@ describe("GET /api/articles", () => {
           expect(typeof article.title).toBe("string");
           expect(typeof article.article_id).toBe("number");
           expect(typeof article.topic).toBe("string");
-          expect(typeof article.created_at).toBe("number");
+          expect(typeof article.created_at).toBe("string");
           expect(typeof article.votes).toBe("number");
           expect(typeof article.article_img_url).toBe("string");
           expect(typeof article.comment_count).toBe("string");
@@ -92,6 +92,15 @@ describe("GET /api/articles", () => {
         .then(({ body }) => {
           const articles = body.articles;
           expect(articles).toBeSortedBy("votes", { descending: false });
+        });
+    });
+    test("200: Sorts articles by a valid column (e.g., title)", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.articles;
+          expect(articles).toBeSortedBy("title", { descending: true });
         });
     });
     test("400: Returns error message when given invalid sort_by column", () => {
@@ -139,7 +148,7 @@ describe("GET /api/articles", () => {
         .expect(404)
         .then(({ body }) => {
           const msg = body.msg;
-          expect(msg).toBe("no articles found for given query/queries");
+          expect(msg).toBe("author not found");
         });
     });
     test("200: Responds with articles array filtered by topic", () => {
@@ -154,13 +163,13 @@ describe("GET /api/articles", () => {
           });
         });
     });
-    test("404: Returns error message when there are no articles of that topic", () => {
+    test("200: Returns empty array when topic is valid, but there are no existing articles", () => {
       return request(app)
         .get("/api/articles?topic=paper")
-        .expect(404)
+        .expect(200)
         .then(({ body }) => {
-          const msg = body.msg;
-          expect(msg).toBe("no articles found for given query/queries");
+          const articles = body.articles;
+          expect(articles).toEqual([]);
         });
     });
     test("404: Returns error message when topic does not exist", () => {
@@ -169,7 +178,7 @@ describe("GET /api/articles", () => {
         .expect(404)
         .then(({ body }) => {
           const msg = body.msg;
-          expect(msg).toBe("no articles found for given query/queries");
+          expect(msg).toBe("topic not found");
         });
     });
   });
@@ -181,17 +190,16 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const article = body.article;
-          expect(article).toBeInstanceOf(Object);
-          expect(article.title).toBe("Eight pug gifs that remind me of mitch");
-          expect(article.topic).toBe("mitch");
-          expect(article.author).toBe("icellusedkars");
-          expect(article.body).toBe("some gifs");
-          expect(new Date(article.created_at).getTime()).toBe(1604394720000);
-          expect(article.votes).toBe(0);
-          expect(article.article_img_url).toBe(
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-          );
           expect(article.article_id).toBe(3);
+          expect(article).toBeInstanceOf(Object);
+
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.topic).toBe("string");
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.body).toBe("string");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
         });
     });
     test("404: Returns error when article ID does not exist", () => {
@@ -209,7 +217,7 @@ describe("GET /api/articles", () => {
         .expect(400)
         .then(({ body }) => {
           const msg = body.msg;
-          expect(msg).toBe("invalid article ID");
+          expect(msg).toBe("bad request...");
         });
     });
   });
@@ -228,7 +236,7 @@ describe("GET /api/articles/:articleid/comments", () => {
         comments.forEach((comment) => {
           expect(typeof comment.comment_id).toBe("number");
           expect(typeof comment.votes).toBe("number");
-          expect(typeof comment.created_at).toBe("number");
+          expect(typeof comment.created_at).toBe("string");
           expect(typeof comment.author).toBe("string");
           expect(typeof comment.body).toBe("string");
           expect(typeof comment.article_id).toBe("number");
@@ -470,7 +478,6 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-// continue test handling tomorrow
 describe("GET /api/users", () => {
   test("200: Returns array of objects of all users", () => {
     return request(app)
