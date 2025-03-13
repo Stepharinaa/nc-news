@@ -10,7 +10,7 @@
     }
   },
   "GET /api/articles": {
-    "description": "Retrieves an array of all articles",
+    "description": "Retrieves an array of all articles, which can be filtered by topic or author and sorted by a specified column",
     "queries": ["author", "topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
