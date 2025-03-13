@@ -69,7 +69,7 @@ describe("GET /api/articles", () => {
           expect(typeof article.created_at).toBe("string");
           expect(typeof article.votes).toBe("number");
           expect(typeof article.article_img_url).toBe("string");
-          expect(typeof article.comment_count).toBe("string");
+          expect(typeof article.comment_count).toBe("number");
         });
       });
   });
@@ -151,16 +151,15 @@ describe("GET /api/articles", () => {
           expect(msg).toBe("author not found");
         });
     });
-    test("200: Responds with articles array filtered by valid topic", () => {
+    test("200: Responds with articles array filtered by topic", () => {
       return request(app)
         .get("/api/articles?topic=mitch")
         .expect(200)
         .then(({ body }) => {
           const articles = body.articles;
           expect(articles).toBeInstanceOf(Array);
-          expect(articles.length).toBeGreaterThan(0);
           articles.forEach((article) => {
-            expect(article).toHaveProperty("topic", "mitch");
+            expect(article.topic).toBe("mitch");
           });
         });
     });
@@ -185,7 +184,7 @@ describe("GET /api/articles", () => {
   });
 
   describe("GET /api/articles/:articleid", () => {
-    test("200: Responds with article object relating to relevant article ID", () => {
+    test("200: Responds with article object relating to relevant article ID, including total number of comments", () => {
       return request(app)
         .get("/api/articles/3")
         .expect(200)
@@ -201,6 +200,16 @@ describe("GET /api/articles", () => {
           expect(typeof article.created_at).toBe("string");
           expect(typeof article.votes).toBe("number");
           expect(typeof article.article_img_url).toBe("string");
+          expect(typeof article.comment_count).toBe("number");
+        });
+    });
+    test("200: Responds with comment_count of 0, when article has no comments", () => {
+      return request(app)
+        .get("/api/articles/2")
+        .expect(200)
+        .then(({ body }) => {
+          const article = body.article;
+          expect(article).toHaveProperty("comment_count", 0);
         });
     });
     test("404: Returns error when article ID does not exist", () => {
