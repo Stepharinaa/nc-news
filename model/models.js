@@ -101,7 +101,6 @@ const fetchArticlebyArticleID = (article_id) => {
       [article_id]
     )
     .then(({ rows }) => {
-      console.log(rows, "<-- ROWS");
       if (!rows.length) {
         return Promise.reject({ status: 404, msg: "article not found" });
       }
