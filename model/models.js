@@ -40,38 +40,52 @@ const fetchArticles = (
   const queryValues = [];
   const whereConditions = [];
 
-  if (author) {
-    whereConditions.push(`articles.author = $${queryValues.length + 1}`);
-    queryValues.push(author);
-  }
+  const doesAuthorExistPromise = author
+    ? db.query(`SELECT * FROM users WHERE username = $1`, [author])
+    : Promise.resolve();
 
-  if (topic) {
-    whereConditions.push(`articles.topic = $${queryValues.length + 1}`);
-    queryValues.push(topic);
-  }
+  return doesAuthorExistPromise.then((authorResult) => {
+    if (author && authorResult.rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "author not found" });
+    }
 
-  if (whereConditions.length > 0) {
-    queryString += ` WHERE ` + whereConditions.join(" AND ");
-  }
+    if (author) {
+      whereConditions.push(`articles.author = $${queryValues.length + 1}`);
+      queryValues.push(author);
+    }
 
-  queryString += ` 
+    const doesTopicExistPromise = topic
+      ? db.query(`SELECT * FROM topics WHERE slug = $1`, [topic])
+      : Promise.resolve();
+
+    return doesTopicExistPromise
+      .then((topicResult) => {
+        if (topic && topicResult.rows.length === 0) {
+          return Promise.reject({ status: 404, msg: "topic not found" });
+        }
+
+        if (topic) {
+          whereConditions.push(`articles.topic = $${queryValues.length + 1}`);
+          queryValues.push(topic);
+        }
+
+        if (whereConditions.length > 0) {
+          queryString += ` WHERE ` + whereConditions.join(" AND ");
+        }
+
+        queryString += ` 
     GROUP BY articles.article_id
     ORDER BY articles.${sort_by} ${order}
   `;
 
-  return db.query(queryString, queryValues).then(({ rows }) => {
-    if (rows.length === 0) {
-      return Promise.reject({
-        status: 404,
-        msg: "no articles found for given query/queries",
+        return db.query(queryString, queryValues);
+      })
+      .then(({ rows }) => {
+        return rows.map((article) => ({
+          ...article,
+          created_at: new Date(article.created_at).getTime(),
+        }));
       });
-    }
-    return rows.map((article) => {
-      return {
-        ...article,
-        created_at: new Date(article.created_at).getTime(),
-      };
-    });
   });
 };
 
