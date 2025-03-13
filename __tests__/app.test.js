@@ -148,7 +148,7 @@ describe("GET /api/articles", () => {
         .expect(404)
         .then(({ body }) => {
           const msg = body.msg;
-          expect(msg).toBe("no articles found for given query/queries");
+          expect(msg).toBe("author not found");
         });
     });
     test("200: Responds with articles array filtered by topic", () => {
@@ -163,13 +163,13 @@ describe("GET /api/articles", () => {
           });
         });
     });
-    test("404: Returns error message when there are no articles of that topic", () => {
+    test("200: Returns empty array when topic is valid, but there are no existing articles", () => {
       return request(app)
         .get("/api/articles?topic=paper")
-        .expect(404)
+        .expect(200)
         .then(({ body }) => {
-          const msg = body.msg;
-          expect(msg).toBe("no articles found for given query/queries");
+          const articles = body.articles;
+          expect(articles).toEqual([]);
         });
     });
     test("404: Returns error message when topic does not exist", () => {
@@ -178,7 +178,7 @@ describe("GET /api/articles", () => {
         .expect(404)
         .then(({ body }) => {
           const msg = body.msg;
-          expect(msg).toBe("no articles found for given query/queries");
+          expect(msg).toBe("topic not found");
         });
     });
   });
