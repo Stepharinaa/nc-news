@@ -17,6 +17,6 @@ if (ENV === "production") {
 
 const db = new Pool(config);
 
-console.log(`Connected to ${process.env.PGDATABASE || "production database"}`);
+// console.log(`Connected to ${process.env.PGDATABASE || "production database"}`);
 
 module.exports = db;
