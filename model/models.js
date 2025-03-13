@@ -83,6 +83,7 @@ const fetchArticles = (
       .then(({ rows }) => {
         return rows.map((article) => ({
           ...article,
+          comment_count: Number(article.comment_count),
         }));
       });
   });
@@ -100,9 +101,11 @@ const fetchArticlebyArticleID = (article_id) => {
       [article_id]
     )
     .then(({ rows }) => {
+      console.log(rows, "<-- ROWS");
       if (!rows.length) {
         return Promise.reject({ status: 404, msg: "article not found" });
       }
+      rows[0].comment_count = Number(rows[0].comment_count);
       return rows[0];
     });
 };
