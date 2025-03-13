@@ -151,15 +151,16 @@ describe("GET /api/articles", () => {
           expect(msg).toBe("author not found");
         });
     });
-    test("200: Responds with articles array filtered by topic", () => {
+    test("200: Responds with articles array filtered by valid topic", () => {
       return request(app)
         .get("/api/articles?topic=mitch")
         .expect(200)
         .then(({ body }) => {
           const articles = body.articles;
           expect(articles).toBeInstanceOf(Array);
+          expect(articles.length).toBeGreaterThan(0);
           articles.forEach((article) => {
-            expect(article.topic).toBe("mitch");
+            expect(article).toHaveProperty("topic", "mitch");
           });
         });
     });
