@@ -4,6 +4,7 @@ const db = require("./db/connection");
 const articlesRouter = require("./routes/articles-router");
 const topicsRouter = require("./routes/topics-router");
 const commentsRouter = require("./routes/comments-router");
+const usersRouter = require("./routes/users-router");
 
 const {
   handlePSQLErrors,
@@ -22,6 +23,7 @@ app.get("/api", (req, res) => {
 app.use("/api/topics", topicsRouter);
 app.use("/api/articles", articlesRouter);
 app.use("/api/comments", commentsRouter);
+app.use("/api/users", usersRouter);
 
 app.all("*", (req, res) => {
   res.status(404).send({ msg: "path not found..." });

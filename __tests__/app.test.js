@@ -5,6 +5,7 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const db = require("../db/connection.js");
 const data = require("../db/data/test-data");
+const users = require("../db/data/test-data/users.js");
 
 beforeEach(() => {
   return seed(data);
@@ -465,6 +466,36 @@ describe("DELETE /api/comments/:comment_id", () => {
             const msg = body.msg;
             expect(msg).toBe("comment id does not exist");
           });
+      });
+  });
+});
+
+// continue test handling tomorrow
+describe("GET /api/users", () => {
+  test("200: Returns array of objects of all users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const users = body.users;
+
+        expect(users).toBeInstanceOf(Array);
+        expect(users.length).toBeGreaterThan(0);
+
+        users.forEach((user) => {
+          expect(typeof user.username).toBe("string");
+          expect(typeof user.name).toBe("string");
+          expect(typeof user.avatar_url).toBe("string");
+        });
+      });
+  });
+  test("404: Returns error message when route is invalid", () => {
+    return request(app)
+      .get("/api/userssss")
+      .expect(404)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("path not found...");
       });
   });
 });
