@@ -94,6 +94,15 @@ describe("GET /api/articles", () => {
           expect(articles).toBeSortedBy("votes", { descending: false });
         });
     });
+    test("200: Sorts articles by a valid column (e.g., title)", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.articles;
+          expect(articles).toBeSortedBy("title", { descending: true });
+        });
+    });
     test("400: Returns error message when given invalid sort_by column", () => {
       return request(app)
         .get("/api/articles?sort_by=random_invalid_column&order=ASC")
@@ -470,7 +479,6 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-// continue test handling tomorrow
 describe("GET /api/users", () => {
   test("200: Returns array of objects of all users", () => {
     return request(app)
