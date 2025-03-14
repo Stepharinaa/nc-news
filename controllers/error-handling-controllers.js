@@ -3,6 +3,8 @@ const handlePSQLErrors = (err, req, res, next) => {
     res.status(400).send({ msg: "Bad request: Invalid data type..." });
   } else if (err.code === "23502") {
     res.status(400).send({ msg: "Bad Request: Missing required fields..." });
+  } else if (err.code === "23503") {
+    res.status(400).send({ msg: "Not found: Foreign key violation..." });
   } else {
     next(err);
   }
