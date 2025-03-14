@@ -505,7 +505,27 @@ describe("PATCH /api/comments/:comment_id", () => {
     return request(app)
       .patch("/api/comments/2")
       .then(({ body }) => {
+        expect(body.msg).toBe("bad request: missing 'inc_votes'");
+      });
+  });
+  test("400: Returns error if `inc_votes` is not a number", () => {
+    const input = { inc_votes: "not-a-number" };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(input)
+      .expect(400)
+      .then(({ body }) => {
         expect(body.msg).toBe("bad request...");
+      });
+  });
+  test("404: Returns error when comment does not exist", () => {
+    const input = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/999999")
+      .send(input)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment does not exist");
       });
   });
 });
