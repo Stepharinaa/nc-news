@@ -1,9 +1,9 @@
 {
   "GET /api": {
-    "description": "Retrieves up a json representation of all the available endpoints of the api"
+    "description": "Retrieves a JSON representation of all the available endpoints of the API"
   },
   "GET /api/topics": {
-    "description": "Serves an array of all topics",
+    "description": "Retrieves an array of all topics",
     "queries": [],
     "exampleResponse": {
       "topics": [{ "slug": "football", "description": "Footie!" }]
@@ -28,8 +28,8 @@
       ]
     }
   },
-  "GET /api/articles/:articleid": {
-    "description": "Retrieves an article object relevant to articleid provided",
+  "GET /api/articles/:article_id": {
+    "description": "Retrieves an article object relevant to the provided article_id",
     "queries": [],
     "exampleResponse": {
       "article": {
@@ -44,8 +44,8 @@
       }
     }
   },
-  "GET /api/articles/:articleid/comments": {
-    "description": "Retrieves an array of comments relevant to provided article_id, each containing a comment_id, votes, author, body, created_at and article_id",
+  "GET /api/articles/:article_id/comments": {
+    "description": "Retrieves an array of comments relevant to the provided article_id, each containing a comment_id, votes, author, body, created_at, and article_id",
     "queries": [],
     "exampleResponse": {
       "comments": [
@@ -60,8 +60,32 @@
       ]
     }
   },
+  "GET /api/users": {
+    "description": "Retrieves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "rogersops",
+          "name": "paul",
+          "avatar_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
+      ]
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "Retrieves an object of the user relevant to the provided username",
+    "queries": [],
+    "exampleResponse": {
+      "user": {
+        "username": "icellusedkars",
+        "name": "sam",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+      }
+    }
+  },
   "POST /api/articles/:article_id/comments": {
-    "description": "Creates and returns an object comment to relevant article id",
+    "description": "Creates and returns a comment object for the relevant article_id",
     "queries": [],
     "exampleResponse": {
       "comment": {
@@ -75,7 +99,7 @@
     }
   },
   "PATCH /api/articles/:article_id": {
-    "description": "Updates an article object and returns updated article object",
+    "description": "Updates an article object and returns the updated article object",
     "queries": [],
     "exampleResponse": {
       "article": {
