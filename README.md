@@ -36,6 +36,7 @@ npm install
 
 ### 3. Setting Up Environment Variables
 
+> [!NOTE]
 > _Under normal circumstances, I know `.env.` details wouldn't be shared, but for the sake of this project, I will be disclosing below:_
 
 You will need to create two `.env` files to store database connection details:
