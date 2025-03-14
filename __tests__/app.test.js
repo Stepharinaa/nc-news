@@ -60,6 +60,7 @@ describe("GET /api/articles", () => {
       .then(({ body }) => {
         const articles = body.articles;
         expect(articles).toBeInstanceOf(Array);
+        expect(articles.length).toBeGreaterThan(0);
 
         articles.forEach((article) => {
           expect(typeof article.author).toBe("string");
