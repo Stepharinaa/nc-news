@@ -451,6 +451,29 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: Updates votes on a comment on relevant comment id", () => {
+    const input = { inc_votes: 25 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(input)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment).toHaveProperty("comment_id", 1);
+        expect(comment).toHaveProperty("article_id", 9);
+        expect(comment).toHaveProperty("author", "butter_bridge");
+        expect(comment).toHaveProperty(
+          "body",
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+        );
+        expect(comment).toHaveProperty("votes", 41);
+        expect(new Date(comment.created_at).toString()).not.toBe(
+          "Invalid Date"
+        );
+      });
+  });
+});
+
 describe("DELETE /api/comments/:comment_id", () => {
   test("204: Deletes the given comment and responds with no content", () => {
     return request(app).delete("/api/comments/7").expect(204);

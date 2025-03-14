@@ -10,4 +10,11 @@ const deleteCommentByCommentID = (req, res, next) => {
     .catch(next);
 };
 
-module.exports = { deleteCommentByCommentID };
+const patchVotesByCommentId = (req, res, next) => {
+  const { comment_id } = req.params;
+  model.updateVotesByCommentID(comment_id).then((comment) => {
+    res.staus(200).send({ comment: comment });
+  });
+};
+
+module.exports = { deleteCommentByCommentID, patchVotesByCommentId };
