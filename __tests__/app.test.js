@@ -451,6 +451,85 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: Updates votes on a comment on relevant comment id", () => {
+    const input = { inc_votes: 25 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(input)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment).toHaveProperty("comment_id", 1);
+        expect(comment).toHaveProperty("article_id", 9);
+        expect(comment).toHaveProperty("author", "butter_bridge");
+        expect(comment).toHaveProperty(
+          "body",
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+        );
+        expect(comment).toHaveProperty("votes", 41);
+        expect(new Date(comment.created_at).toString()).not.toBe(
+          "Invalid Date"
+        );
+      });
+  });
+  test("200: Updates votes on comment, including negative votes", () => {
+    const input = { inc_votes: -20 };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(input)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment).toHaveProperty("comment_id", 2);
+        expect(comment).toHaveProperty("article_id", 1);
+        expect(comment).toHaveProperty("author", "butter_bridge");
+        expect(comment).toHaveProperty(
+          "body",
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky."
+        );
+        expect(comment).toHaveProperty("votes", -6);
+        expect(new Date(comment.created_at).toString()).not.toBe(
+          "Invalid Date"
+        );
+      });
+  });
+  test("404: Returns error when comment doesn't exist", () => {
+    const input = { inc_votes: -20 };
+    return request(app)
+      .patch("/api/comments/-1000")
+      .send(input)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment does not exist");
+      });
+  });
+  test("400: Returns error if 'inc_votes' is missing", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request: missing 'inc_votes'");
+      });
+  });
+  test("400: Returns error if `inc_votes` is not a number", () => {
+    const input = { inc_votes: "not-a-number" };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(input)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request...");
+      });
+  });
+  test("404: Returns error when comment does not exist", () => {
+    const input = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/999999")
+      .send(input)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment does not exist");
+      });
+  });
+});
+
 describe("DELETE /api/comments/:comment_id", () => {
   test("204: Deletes the given comment and responds with no content", () => {
     return request(app).delete("/api/comments/7").expect(204);

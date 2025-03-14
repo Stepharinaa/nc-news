@@ -113,6 +113,20 @@
       }
     }
   },
+  "PATCH /api/comments/:comment_id": {
+    "description": "Updates a comment's vote count and returns the updated comment object",
+    "queries": [],
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 6,
+        "article_id": 1,
+        "author": "icellusedkars",
+        "body": "I hate streaming eyes even more",
+        "created_at": "020-04-11 22:02:00",
+        "votes": 0
+      }
+    }
+  },
   "DELETE /api/comments/:comment_id": {
     "description": "Deletes a comment by its ID. Responds with no content (204)."
   }
