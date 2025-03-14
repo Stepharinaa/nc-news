@@ -142,6 +142,23 @@ describe("GET /api/articles", () => {
           expect(body.msg).toBe("Not found: Foreign key violation...");
         });
     });
+    test("400: Responds with an error when given invalid data types", () => {
+      const input = {
+        author: "lurker",
+        title: 12345,
+        body: "Introduction to How to Lurk on Twitch :)",
+        topic: "mitch",
+        article_img_url: 67890,
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(input)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid data type");
+        });
+    });
   });
 
   describe("GET /api/articles with query parameters", () => {

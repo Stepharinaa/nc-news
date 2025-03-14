@@ -13,14 +13,22 @@ const getArticles = (req, res, next) => {
 
 const postArticle = (req, res, next) => {
   let { author, title, body, topic, article_img_url } = req.body;
-  console.log(
-    author,
-    title,
-    body,
-    topic,
-    article_img_url,
-    "<-- BIG CONSOLELOG"
-  );
+
+  if (!author || !title || !body || !topic) {
+    return res
+      .status(400)
+      .send({ msg: "Bad Request: Missing required fields..." });
+  }
+
+  if (
+    typeof author !== "string" ||
+    typeof title !== "string" ||
+    typeof body !== "string" ||
+    typeof topic !== "string" ||
+    (article_img_url !== undefined && typeof article_img_url !== "string")
+  ) {
+    return res.status(400).send({ msg: "Invalid data type" });
+  }
   model
     .insertArticle(author, title, body, topic, article_img_url)
     .then((article) => {
