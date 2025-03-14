@@ -516,3 +516,22 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+describe("GET /api/users/:username", () => {
+  test("200: Returns an object of specified user", () => {
+    return request(app)
+      .get("/api/users/rogersop")
+      .expect(200)
+      .then(({ body }) => {
+        const user = body.user;
+        expect(user).toBeInstanceOf(Object);
+
+        expect(user).toHaveProperty("username", "rogersop");
+        expect(user).toHaveProperty("name", "paul");
+        expect(user).toHaveProperty(
+          "avatar_url",
+          "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+        );
+      });
+  });
+});
