@@ -472,6 +472,26 @@ describe("PATCH /api/comments/:comment_id", () => {
         );
       });
   });
+  test("200: Updates votes on comment, including negative votes", () => {
+    const input = { inc_votes: -20 };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(input)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment).toHaveProperty("comment_id", 2);
+        expect(comment).toHaveProperty("article_id", 1);
+        expect(comment).toHaveProperty("author", "butter_bridge");
+        expect(comment).toHaveProperty(
+          "body",
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky."
+        );
+        expect(comment).toHaveProperty("votes", -6);
+        expect(new Date(comment.created_at).toString()).not.toBe(
+          "Invalid Date"
+        );
+      });
+  });
 });
 
 describe("DELETE /api/comments/:comment_id", () => {
