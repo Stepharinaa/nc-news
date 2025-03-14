@@ -73,6 +73,14 @@ To verify that everything is working correctly, run:
 npm test    // Runs Jest test suite
 ```
 
+### 5. Running in Development Mode
+
+For easier debugging, you can run the server using **nodemon**, which automatically restarts the server on file changes:
+
+```
+npm run dev
+```
+
 ### 6. Running the API locally
 
 To start the API server locally, use:
