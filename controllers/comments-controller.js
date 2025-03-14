@@ -10,11 +10,17 @@ const deleteCommentByCommentID = (req, res, next) => {
     .catch(next);
 };
 
-const patchVotesByCommentId = (req, res, next) => {
+const patchVotesByCommentID = (req, res, next) => {
   const { comment_id } = req.params;
-  model.updateVotesByCommentID(comment_id).then((comment) => {
-    res.staus(200).send({ comment: comment });
-  });
+  console.log(comment_id, "<-- THIS IS COMMENT_ID");
+  const { inc_votes } = req.body;
+  console.log(inc_votes, "<-- THIS IS VOTES");
+  model
+    .updateVotesByCommentID(comment_id, inc_votes)
+    .then((comment) => {
+      res.status(200).send({ comment: comment });
+    })
+    .catch(next);
 };
 
-module.exports = { deleteCommentByCommentID, patchVotesByCommentId };
+module.exports = { deleteCommentByCommentID, patchVotesByCommentID };
