@@ -534,4 +534,13 @@ describe("GET /api/users/:username", () => {
         );
       });
   });
+  test("404: Returns error message when route is invalid", () => {
+    return request(app)
+      .get("/api/users/nonexistentusername")
+      .expect(404)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("username not found...");
+      });
+  });
 });
