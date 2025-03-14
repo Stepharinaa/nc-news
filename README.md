@@ -73,12 +73,17 @@ To verify that everything is working correctly, run:
 npm test    // Runs Jest test suite
 ```
 
-### 6. Verifying the Setup
+### 6. Running the API locally
 
-Run the test suite to check if your tables are set up correctly:
+To start the API server locally, use:
 
 ```
-npm run test-seed
+npm start
 ```
 
-👍 If all tests pass, your database is successfully seeded!
+The server should now be running on: http://localhost:9090
+
+## Minimum Requirements
+
+- **Node.js** v18+
+- **PostgreSQL** v14+
