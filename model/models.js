@@ -33,7 +33,7 @@ const fetchArticles = (
   }
 
   let queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
-  COUNT(comments.comment_id) AS comment_count
+ CAST(COUNT(comments.comment_id) AS INT) AS comment_count
   FROM articles
   LEFT JOIN comments ON articles.article_id = comments.article_id`;
 
@@ -81,10 +81,7 @@ const fetchArticles = (
         return db.query(queryString, queryValues);
       })
       .then(({ rows }) => {
-        return rows.map((article) => ({
-          ...article,
-          comment_count: Number(article.comment_count),
-        }));
+        return rows;
       });
   });
 };
@@ -119,9 +116,7 @@ const fetchCommentsByArticleID = (article_id) => {
       if (!rows.length) {
         return Promise.reject({ status: 404, msg: "article not found" });
       }
-      return rows.map((comment) => ({
-        ...comment,
-      }));
+      return rows;
     });
 };
 
@@ -207,6 +202,17 @@ const fetchUsers = () => {
   });
 };
 
+const fetchUserByUsername = (username) => {
+  return db
+    .query(`SELECT * FROM users WHERE username = $1`, [username])
+    .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({ status: 404, msg: "username not found..." });
+      }
+      return rows[0];
+    });
+};
+
 module.exports = {
   fetchTopics,
   fetchArticlebyArticleID,
@@ -216,4 +222,5 @@ module.exports = {
   updateVotesByArticleID,
   removeCommentbyCommentID,
   fetchUsers,
+  fetchUserByUsername,
 };
