@@ -492,6 +492,22 @@ describe("PATCH /api/comments/:comment_id", () => {
         );
       });
   });
+  test("404: Returns error when comment doesn't exist", () => {
+    const input = { inc_votes: -20 };
+    return request(app)
+      .patch("/api/comments/-1000")
+      .send(input)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment does not exist");
+      });
+  });
+  test("400: Returns error if 'inc_votes' is missing", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request...");
+      });
+  });
 });
 
 describe("DELETE /api/comments/:comment_id", () => {

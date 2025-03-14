@@ -12,12 +12,17 @@ const deleteCommentByCommentID = (req, res, next) => {
 
 const patchVotesByCommentID = (req, res, next) => {
   const { comment_id } = req.params;
-  console.log(comment_id, "<-- THIS IS COMMENT_ID");
   const { inc_votes } = req.body;
-  console.log(inc_votes, "<-- THIS IS VOTES");
+
+  if (!inc_votes) {
+    return res.status(400).send({ msg: "bad request..." });
+  }
   model
     .updateVotesByCommentID(comment_id, inc_votes)
     .then((comment) => {
+      if (!comment) {
+        return res.status(404).send({ msg: "comment does not exist" });
+      }
       res.status(200).send({ comment: comment });
     })
     .catch(next);
