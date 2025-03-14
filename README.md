@@ -55,27 +55,22 @@ PGDATABASE=nc_news_test
 > [!CAUTION]
 > Ensure that your `.gitignore` file includes `.env.*` and `node_modules` to prevent these files from being pushed to GitHub.
 
-### 4. Creating Databases
+### 4. Creating & Seeding the Databases
 
-Once the `.env` files are created, set up and seed the database using:
-
-```
-npm run setup-dbs
-npm run seed
-```
-
-### 5. Seeding the Databases
-
-To seed the test database and check the setup, run:
+Once the `.env` files are created, create and seed the database using:
 
 ```
-npm run test-seed
+npm run setup-dbs      // Creates both test and development databases
+npm run seed           // Seeds the development database
+npm run test-seed      // Seeds the test database
 ```
 
-To seed the development database, run:
+### 5. Running the Test Suite
+
+To verify that everything is working correctly, run:
 
 ```
-npm run seed-dev
+npm test    // Runs Jest test suite
 ```
 
 ### 6. Verifying the Setup
