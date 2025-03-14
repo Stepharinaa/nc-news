@@ -119,9 +119,7 @@ const fetchCommentsByArticleID = (article_id) => {
       if (!rows.length) {
         return Promise.reject({ status: 404, msg: "article not found" });
       }
-      return rows.map((comment) => ({
-        ...comment,
-      }));
+      return rows;
     });
 };
 
