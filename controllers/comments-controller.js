@@ -15,7 +15,7 @@ const patchVotesByCommentID = (req, res, next) => {
   const { inc_votes } = req.body;
 
   if (!inc_votes) {
-    return res.status(400).send({ msg: "bad request..." });
+    return res.status(400).send({ msg: "bad request: missing 'inc_votes'" });
   }
   model
     .updateVotesByCommentID(comment_id, inc_votes)
