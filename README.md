@@ -14,49 +14,74 @@ _Hosted API_: https://stephs-northcoders-news.onrender.com
 
 ### 1. Clone the Repository
 
-Clone the NC News repo to your local machine:  
-`git clone <https://github.com/Stepharinaa/nc-news>`
+Clone the NC News repository to your local machine:
 
-Remember to change directory into your chosen project folder:  
-`cd <YOUR_PROJECT_FOLDER>`
+```
+git clone <https://github.com/your-username/nc-news.git>
+```
+
+Change directory into your newly cloned repo:
+
+```
+cd nc-news
+```
 
 ### 2. Install Dependencies
 
-Run the following command to install the required packages:  
-`npm install`
+Ensure you have [**Node.js**](https://nodejs.org/en) and [**PostgreSQL**](https://www.w3schools.com/postgresql/postgresql_install.php) installed before proceeding. Then, install the required dependencies using the following command:
 
-### 3. Creating Databases
+```
+npm install
+```
 
-Run the setup script to create both the test and development databases:  
-`npm run setup-dbs`
-
-### 4. Setting Up Environment Variables
+### 3. Setting Up Environment Variables
 
 _Under normal circumstances, I know `.env.` details wouldn't be shared, but for the sake of this project, I will be disclosing below:_  
 You will need to create two `.env` files to store database connection details:
 
-`.env.development` file (for the development database):  
-`PGDATABASE=nc_news`
+`.env.development` file (for the development database):
 
-`.env.test` file (for the test database):  
-`PGDATABASE=nc_news_test`
+```
+PGDATABASE=nc_news
+```
+
+`.env.test` file (for the test database):
+
+```
+PGDATABASE=nc_news_test
+```
 
 Ensure that your `.gitignore` file includes `.env.*` and `node_modules` to prevent these files from being pushed to GitHub.
+
+### 4. Creating Databases
+
+Once the `.env` files are created, set up and seed the database using:
+
+```
+npm run setup-dbs
+npm run seed
+```
 
 ### 5. Seeding the Databases
 
 To seed the test database and check the setup, run:
 
-`npm run test-seed`
+```
+npm run test-seed
+```
 
 To seed the development database, run:
 
-`npm run seed-dev`
+```
+npm run seed-dev
+```
 
 ### 6. Verifying the Setup
 
 Run the test suite to check if your tables are set up correctly:
 
-`npm run test-seed`
+```
+npm run test-seed
+```
 
 If all tests pass, your database is successfully seeded!
