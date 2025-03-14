@@ -11,6 +11,24 @@ const getArticles = (req, res, next) => {
     .catch(next);
 };
 
+const postArticle = (req, res, next) => {
+  let { author, title, body, topic, article_img_url } = req.body;
+  console.log(
+    author,
+    title,
+    body,
+    topic,
+    article_img_url,
+    "<-- BIG CONSOLELOG"
+  );
+  model
+    .insertArticle(author, title, body, topic, article_img_url)
+    .then((article) => {
+      res.status(201).send({ article: article });
+    })
+    .catch(next);
+};
+
 const getArticleByArticleID = (req, res, next) => {
   const { article_id } = req.params;
   model
@@ -83,4 +101,5 @@ module.exports = {
   getCommentsByArticleID,
   postCommentByArticleID,
   patchVotesByArticleID,
+  postArticle,
 };
