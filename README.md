@@ -36,22 +36,24 @@ npm install
 
 ### 3. Setting Up Environment Variables
 
-_Under normal circumstances, I know `.env.` details wouldn't be shared, but for the sake of this project, I will be disclosing below:_  
+> _Under normal circumstances, I know `.env.` details wouldn't be shared, but for the sake of this project, I will be disclosing below:_
+
 You will need to create two `.env` files to store database connection details:
 
-`.env.development` file (for the development database):
+`.env.development` file (for development database):
 
 ```
 PGDATABASE=nc_news
 ```
 
-`.env.test` file (for the test database):
+`.env.test` file (for test database):
 
 ```
 PGDATABASE=nc_news_test
 ```
 
-Ensure that your `.gitignore` file includes `.env.*` and `node_modules` to prevent these files from being pushed to GitHub.
+> [!CAUTION]
+> Ensure that your `.gitignore` file includes `.env.*` and `node_modules` to prevent these files from being pushed to GitHub.
 
 ### 4. Creating Databases
 
@@ -84,4 +86,4 @@ Run the test suite to check if your tables are set up correctly:
 npm run test-seed
 ```
 
-If all tests pass, your database is successfully seeded!
+👍 If all tests pass, your database is successfully seeded!
