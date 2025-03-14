@@ -6,6 +6,7 @@ const seed = require("../db/seeds/seed.js");
 const db = require("../db/connection.js");
 const data = require("../db/data/test-data");
 const users = require("../db/data/test-data/users.js");
+const { string } = require("pg-format");
 
 beforeEach(() => {
   return seed(data);
@@ -83,6 +84,34 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
         expect(articles).toBeInstanceOf(Array);
       });
+  });
+
+  describe("POST /api/articles", () => {
+    test("201: Returns newly posted article object, even if article_img_url is not provided", () => {
+      const input = {
+        author: "lurker",
+        title: "Why Mitch Shouldn't Play League of Legends",
+        body: "Everyone on League is a massive INTer.",
+        topic: "mitch",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(input)
+        .expect(201)
+        .then(({ body }) => {
+          const article = body.article;
+          expect(article).toMatchObject({
+            author: "lurker",
+            title: "Why Mitch Shouldn't Play League of Legends",
+            body: "Everyone on League is a massive INTer.",
+            topic: "mitch",
+            article_img_url: expect.any(String),
+            article_id: expect.any(Number),
+            created_at: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+    });
   });
 
   describe("GET /api/articles with query parameters", () => {
