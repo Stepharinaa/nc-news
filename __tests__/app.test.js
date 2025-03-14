@@ -112,6 +112,36 @@ describe("GET /api/articles", () => {
           });
         });
     });
+    test("400: Responds with an error when required fields are missing", () => {
+      const input = {
+        author: "lurker",
+        title: "Which Coding Language is the Best to Learn for Beginners?",
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(input)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request: Missing required fields...");
+        });
+    });
+    test("400: Responds with an error when author does not exist", () => {
+      const input = {
+        author: "non_existent_user",
+        title: "Random Article",
+        body: "Are Dogs Truly Better Than Cats?",
+        topic: "cats",
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(input)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Not found: Foreign key violation...");
+        });
+    });
   });
 
   describe("GET /api/articles with query parameters", () => {
@@ -257,7 +287,7 @@ describe("GET /api/articles", () => {
         .expect(400)
         .then(({ body }) => {
           const msg = body.msg;
-          expect(msg).toBe("bad request...");
+          expect(msg).toBe("Bad request: Invalid data type...");
         });
     });
   });
@@ -307,7 +337,7 @@ describe("GET /api/articles/:articleid/comments", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("bad request...");
+        expect(msg).toBe("Bad request: Invalid data type...");
       });
   });
 });
@@ -544,7 +574,7 @@ describe("PATCH /api/comments/:comment_id", () => {
       .send(input)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("bad request...");
+        expect(body.msg).toBe("Bad request: Invalid data type...");
       });
   });
   test("404: Returns error when comment does not exist", () => {
@@ -578,7 +608,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("bad request...");
+        expect(msg).toBe("Bad request: Invalid data type...");
       });
   });
   test("404: Returns error if the comment has already been deleted", () => {
