@@ -42,6 +42,9 @@ const getArticleByArticleID = (req, res, next) => {
   model
     .fetchArticlebyArticleID(article_id)
     .then((article) => {
+      if (!article) {
+        return Promise.reject({ status: 404, msg: "article not found" });
+      }
       res.status(200).send({ article: article });
     })
     .catch(next);
