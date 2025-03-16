@@ -52,6 +52,9 @@ const getCommentsByArticleID = (req, res, next) => {
   model
     .fetchCommentsByArticleID(article_id)
     .then((comments) => {
+      if (!comments.length) {
+        return Promise.reject({ status: 404, msg: "article not found" });
+      }
       res.status(200).send({ comments: comments });
     })
     .catch(next);
