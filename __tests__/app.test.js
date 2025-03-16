@@ -5,7 +5,6 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const db = require("../db/connection.js");
 const data = require("../db/data/test-data");
-const users = require("../db/data/test-data/users.js");
 
 beforeEach(() => {
   return seed(data);
