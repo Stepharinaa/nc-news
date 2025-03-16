@@ -4,7 +4,13 @@ const deleteCommentByCommentID = (req, res, next) => {
   const { comment_id } = req.params;
   model
     .removeCommentbyCommentID(comment_id)
-    .then(() => {
+    .then((deletedComment) => {
+      if (!deletedComment) {
+        return Promise.reject({
+          status: 404,
+          msg: "comment id does not exist",
+        });
+      }
       res.status(204).send();
     })
     .catch(next);
