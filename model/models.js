@@ -12,23 +12,39 @@ const insertArticle = (author, title, body, topic, article_img_url) => {
       "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700";
   }
   return db
-    .query(
-      `INSERT INTO articles (author, title, body, topic, article_img_url) 
+    .query(`SELECT * FROM users WHERE username = $1`, [author])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Not found: Author does not exist",
+        });
+      }
+      return db.query(`SELECT * FROM topics WHERE slug = $1`, [topic]);
+    })
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Not found: Topic does not exist",
+        });
+      }
+      return db.query(
+        `INSERT INTO articles (author, title, body, topic, article_img_url) 
        VALUES ($1, $2, $3, $4, $5)
        RETURNING article_id, author, title, body, topic, article_img_url, created_at`,
-      [author, title, body, topic, article_img_url]
-    )
+        [author, title, body, topic, article_img_url]
+      );
+    })
     .then(({ rows }) => {
-      const newArticle = rows[0];
-
       return db.query(
         `SELECT articles.*, 
-                CAST(COUNT(comments.comment_id) AS INT) AS comment_count
-         FROM articles
-         LEFT JOIN comments ON articles.article_id = comments.article_id
-         WHERE articles.article_id = $1
-         GROUP BY articles.article_id`,
-        [newArticle.article_id]
+              CAST(COUNT(comments.comment_id) AS INT) AS comment_count
+       FROM articles
+       LEFT JOIN comments ON articles.article_id = comments.article_id
+       WHERE articles.article_id = $1
+       GROUP BY articles.article_id`,
+        [rows[0].article_id]
       );
     })
     .then(({ rows }) => rows[0]);

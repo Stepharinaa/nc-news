@@ -6,7 +6,6 @@ const seed = require("../db/seeds/seed.js");
 const db = require("../db/connection.js");
 const data = require("../db/data/test-data");
 const users = require("../db/data/test-data/users.js");
-const { string } = require("pg-format");
 
 beforeEach(() => {
   return seed(data);
@@ -112,6 +111,34 @@ describe("GET /api/articles", () => {
           });
         });
     });
+    test("201: Ignores unnecessary properties and successfully creates an article", () => {
+      const input = {
+        author: "lurker",
+        title: "Really Interesting Article",
+        body: "This Is How Our Brains Function When We Sleep Cuddling a Cat...",
+        topic: "cats",
+        extra_property: "This should be ignored",
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(input)
+        .expect(201)
+        .then(({ body }) => {
+          const article = body.article;
+          expect(article).toMatchObject({
+            author: "lurker",
+            title: "Really Interesting Article",
+            body: "This Is How Our Brains Function When We Sleep Cuddling a Cat...",
+            topic: "cats",
+            article_img_url: expect.any(String),
+            article_id: expect.any(Number),
+            created_at: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+          expect(article).not.toHaveProperty("extra_property");
+        });
+    });
     test("400: Responds with an error when required fields are missing", () => {
       const input = {
         author: "lurker",
@@ -137,9 +164,9 @@ describe("GET /api/articles", () => {
       return request(app)
         .post("/api/articles")
         .send(input)
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Not found: Foreign key violation...");
+          expect(body.msg).toBe("Not found: Author does not exist");
         });
     });
     test("400: Responds with an error when given invalid data types", () => {
@@ -304,7 +331,7 @@ describe("GET /api/articles", () => {
         .expect(400)
         .then(({ body }) => {
           const msg = body.msg;
-          expect(msg).toBe("Bad request: Invalid data type...");
+          expect(msg).toBe("Invalid data type");
         });
     });
   });
@@ -354,7 +381,7 @@ describe("GET /api/articles/:articleid/comments", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("Bad request: Invalid data type...");
+        expect(msg).toBe("Invalid data type");
       });
   });
 });
@@ -591,7 +618,7 @@ describe("PATCH /api/comments/:comment_id", () => {
       .send(input)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request: Invalid data type...");
+        expect(body.msg).toBe("Invalid data type");
       });
   });
   test("404: Returns error when comment does not exist", () => {
@@ -625,7 +652,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("Bad request: Invalid data type...");
+        expect(msg).toBe("Invalid data type");
       });
   });
   test("404: Returns error if the comment has already been deleted", () => {
