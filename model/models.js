@@ -134,7 +134,7 @@ const fetchArticlebyArticleID = (article_id) => {
   return db
     .query(
       `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.body, articles.created_at, articles.votes, articles.article_img_url,
-      COUNT (comments.comment_id) AS comment_count
+      CAST(COUNT(comments.comment_id) AS INT) AS comment_count
       FROM articles
       LEFT JOIN comments ON articles.article_id = comments.article_id
       WHERE articles.article_id = $1
@@ -145,7 +145,6 @@ const fetchArticlebyArticleID = (article_id) => {
       if (!rows.length) {
         return Promise.reject({ status: 404, msg: "article not found" });
       }
-      rows[0].comment_count = Number(rows[0].comment_count);
       return rows[0];
     });
 };
