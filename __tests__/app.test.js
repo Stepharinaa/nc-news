@@ -85,6 +85,109 @@ describe("GET /api/articles", () => {
       });
   });
 
+  describe("POST /api/articles", () => {
+    test("201: Returns newly posted article object, even if article_img_url is not provided", () => {
+      const input = {
+        author: "lurker",
+        title: "Why Mitch Shouldn't Play League of Legends",
+        body: "Everyone on League is a massive INTer.",
+        topic: "mitch",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(input)
+        .expect(201)
+        .then(({ body }) => {
+          const article = body.article;
+          expect(article).toMatchObject({
+            author: "lurker",
+            title: "Why Mitch Shouldn't Play League of Legends",
+            body: "Everyone on League is a massive INTer.",
+            topic: "mitch",
+            article_img_url: expect.any(String),
+            article_id: expect.any(Number),
+            created_at: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+    });
+    test("201: Ignores unnecessary properties and successfully creates an article", () => {
+      const input = {
+        author: "lurker",
+        title: "Really Interesting Article",
+        body: "This Is How Our Brains Function When We Sleep Cuddling a Cat...",
+        topic: "cats",
+        extra_property: "This should be ignored",
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(input)
+        .expect(201)
+        .then(({ body }) => {
+          const article = body.article;
+          expect(article).toMatchObject({
+            author: "lurker",
+            title: "Really Interesting Article",
+            body: "This Is How Our Brains Function When We Sleep Cuddling a Cat...",
+            topic: "cats",
+            article_img_url: expect.any(String),
+            article_id: expect.any(Number),
+            created_at: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+          expect(article).not.toHaveProperty("extra_property");
+        });
+    });
+    test("400: Responds with an error when required fields are missing", () => {
+      const input = {
+        author: "lurker",
+        title: "Which Coding Language is the Best to Learn for Beginners?",
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(input)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request: Missing required fields...");
+        });
+    });
+    test("400: Responds with an error when author does not exist", () => {
+      const input = {
+        author: "non_existent_user",
+        title: "Random Article",
+        body: "Are Dogs Truly Better Than Cats?",
+        topic: "cats",
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(input)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Not found: Author does not exist");
+        });
+    });
+    test("400: Responds with an error when given invalid data types", () => {
+      const input = {
+        author: "lurker",
+        title: 12345,
+        body: "Introduction to How to Lurk on Twitch :)",
+        topic: "mitch",
+        article_img_url: 67890,
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(input)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid data type");
+        });
+    });
+  });
+
   describe("GET /api/articles with query parameters", () => {
     test("200: Responds with articles array sorted by votes ascending order", () => {
       return request(app)
@@ -228,7 +331,7 @@ describe("GET /api/articles", () => {
         .expect(400)
         .then(({ body }) => {
           const msg = body.msg;
-          expect(msg).toBe("bad request...");
+          expect(msg).toBe("Invalid data type");
         });
     });
   });
@@ -278,7 +381,7 @@ describe("GET /api/articles/:articleid/comments", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("bad request...");
+        expect(msg).toBe("Invalid data type");
       });
   });
 });
@@ -515,7 +618,7 @@ describe("PATCH /api/comments/:comment_id", () => {
       .send(input)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("bad request...");
+        expect(body.msg).toBe("Invalid data type");
       });
   });
   test("404: Returns error when comment does not exist", () => {
@@ -549,7 +652,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("bad request...");
+        expect(msg).toBe("Invalid data type");
       });
   });
   test("404: Returns error if the comment has already been deleted", () => {

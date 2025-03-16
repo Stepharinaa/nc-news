@@ -11,6 +11,32 @@ const getArticles = (req, res, next) => {
     .catch(next);
 };
 
+const postArticle = (req, res, next) => {
+  let { author, title, body, topic, article_img_url } = req.body;
+
+  if (!author || !title || !body || !topic) {
+    return res
+      .status(400)
+      .send({ msg: "Bad Request: Missing required fields..." });
+  }
+
+  if (
+    typeof author !== "string" ||
+    typeof title !== "string" ||
+    typeof body !== "string" ||
+    typeof topic !== "string" ||
+    (article_img_url !== undefined && typeof article_img_url !== "string")
+  ) {
+    return res.status(400).send({ msg: "Invalid data type" });
+  }
+  model
+    .insertArticle(author, title, body, topic, article_img_url)
+    .then((article) => {
+      res.status(201).send({ article: article });
+    })
+    .catch(next);
+};
+
 const getArticleByArticleID = (req, res, next) => {
   const { article_id } = req.params;
   model
@@ -83,4 +109,5 @@ module.exports = {
   getCommentsByArticleID,
   postCommentByArticleID,
   patchVotesByArticleID,
+  postArticle,
 };
