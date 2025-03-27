@@ -54,7 +54,9 @@ const fetchArticles = (
   author,
   topic,
   sort_by = "created_at",
-  order = "DESC"
+  order = "DESC",
+  limit,
+  page
 ) => {
   const allowedSortByColumns = [
     "author",
@@ -68,12 +70,11 @@ const fetchArticles = (
   ];
   const allowedOrder = ["ASC", "DESC"];
 
-  if (!allowedSortByColumns.includes(sort_by)) {
-    return Promise.reject({ status: 400, msg: "invalid sort_by column" });
-  }
-
-  if (!allowedOrder.includes(order)) {
-    return Promise.reject({ status: 400, msg: "invalid order value" });
+  if (
+    !allowedSortByColumns.includes(sort_by) ||
+    !allowedOrder.includes(order)
+  ) {
+    return Promise.reject({ status: 400, msg: "invalid query parameters" });
   }
 
   let queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
@@ -120,12 +121,20 @@ const fetchArticles = (
         queryString += ` 
     GROUP BY articles.article_id
     ORDER BY articles.${sort_by} ${order}
+    LIMIT $${queryValues.length + 1} OFFSET $${queryValues.length + 2}
   `;
+
+        const offset = (page - 1) * limit;
+        queryValues.push(limit, offset);
 
         return db.query(queryString, queryValues);
       })
       .then(({ rows }) => {
-        return rows;
+        return db
+          .query(`SELECT CAST(COUNT(*) AS INT) AS total_count FROM articles;`)
+          .then(({ rows: countRows }) => {
+            return { articles: rows, total_count: countRows[0].total_count };
+          });
       });
   });
 };

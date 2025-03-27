@@ -1,12 +1,12 @@
 const model = require("../model/models");
 
 const getArticles = (req, res, next) => {
-  let { author, topic, sort_by, order } = req.query;
+  let { author, topic, sort_by, order, limit = 10, page = 1 } = req.query;
 
   model
-    .fetchArticles(author, topic, sort_by, order)
-    .then((articles) => {
-      res.status(200).send({ articles: articles });
+    .fetchArticles(author, topic, sort_by, order, limit, page)
+    .then((responseArticles) => {
+      res.status(200).send(responseArticles);
     })
     .catch(next);
 };

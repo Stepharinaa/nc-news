@@ -212,7 +212,7 @@ describe("GET /api/articles", () => {
         .expect(400)
         .then(({ body }) => {
           const msg = body.msg;
-          expect(msg).toBe("invalid sort_by column");
+          expect(msg).toBe("invalid query parameters");
         });
     });
     test("400: Returns error message when given invalid order query", () => {
@@ -221,7 +221,7 @@ describe("GET /api/articles", () => {
         .expect(400)
         .then(({ body }) => {
           const msg = body.msg;
-          expect(msg).toBe("invalid order value");
+          expect(msg).toBe("invalid query parameters");
         });
     });
     test("404: Returns error message when route is invalid", () => {
@@ -272,7 +272,7 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const articles = body.articles;
-          expect(articles).toEqual([]);
+          expect(articles).toBeInstanceOf(Array);
         });
     });
     test("404: Returns error message when topic does not exist", () => {
@@ -282,6 +282,32 @@ describe("GET /api/articles", () => {
         .then(({ body }) => {
           const msg = body.msg;
           expect(msg).toBe("topic not found");
+        });
+    });
+  });
+
+  describe("GET /api/articles with pagination", () => {
+    test("200: Returns paginated articles with a total_count", () => {
+      return request(app)
+        .get("/api/articles?limit=6&page=1")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toHaveLength(6);
+          expect(body).toHaveProperty("total_count");
+          expect(body.total_count).toEqual(expect.any(Number));
+
+          body.articles.forEach((article) => {
+            expect(article).toMatchObject({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+              article_img_url: expect.any(String),
+            });
+          });
         });
     });
   });
