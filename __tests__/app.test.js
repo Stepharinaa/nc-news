@@ -310,6 +310,33 @@ describe("GET /api/articles", () => {
           });
         });
     });
+    test("200: Returns distinct/unique articles for different pages", () => {
+      return Promise.all([
+        request(app).get("/api/articles?limit=5&page=1").expect(200),
+        request(app).get("/api/articles?limit=5&page=2").expect(200),
+      ]).then(([responsePage1, responsePage2]) => {
+        const articlesPage1 = responsePage1.body.articles;
+        const articlesPage2 = responsePage2.body.articles;
+
+        expect(articlesPage1.length).toBeLessThanOrEqual(5);
+        expect(articlesPage2.length).toBeLessThanOrEqual(5);
+
+        expect(responsePage1.body.total_count).toBe(
+          responsePage2.body.total_count
+        );
+
+        const articleIDsPage1 = articlesPage1.map(
+          (article) => article.article_id
+        );
+        const articleIDsPage2 = articlesPage2.map(
+          (article) => article.article_id
+        );
+
+        expect(articleIDsPage1).not.toEqual(
+          expect.arrayContaining(articleIDsPage2)
+        );
+      });
+    });
   });
 
   describe("GET /api/articles/:articleid", () => {
