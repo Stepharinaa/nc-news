@@ -26,7 +26,7 @@
   },
   "GET /api/articles": {
     "description": "Retrieves an array of all articles, which can be filtered by topic or author and sorted by a specified column",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": ["author", "topic", "sort_by", "order", "limit", "page"],
     "exampleResponse": {
       "articles": [
         {
@@ -40,7 +40,8 @@
           "comment_count": 6,
           "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         }
-      ]
+      ],
+      "total_count": 100
     }
   },
   "GET /api/articles/:article_id": {
