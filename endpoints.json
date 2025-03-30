@@ -9,6 +9,16 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "Adds a topic object with the newly added topic",
+    "queries": [],
+    "exampleResponse": {
+      "topic": {
+        "slug": "baking",
+        "description": "Here's a shoutout to all you Great British Bake-Off Enthusiasts"
+      }
+    }
+  },
   "POST /api/articles": {
     "description": "Posts an article object, even if article_img_url is not provided",
     "queries": [],
@@ -26,7 +36,14 @@
   },
   "GET /api/articles": {
     "description": "Retrieves an array of all articles, which can be filtered by topic or author and sorted by a specified column",
-    "queries": ["author", "topic", "sort_by", "order", "limit", "page"],
+    "queries": [
+      "author",
+      "topic",
+      "sort_by (e.g., 'created_at', 'votes', 'comment_count')",
+      "order ('ASC' or 'DESC')",
+      "limit",
+      "page"
+    ],
     "exampleResponse": {
       "articles": [
         {
