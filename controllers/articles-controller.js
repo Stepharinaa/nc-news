@@ -92,7 +92,7 @@ const postCommentByArticleID = (req, res, next) => {
 const patchVotesByArticleID = (req, res, next) => {
   const keys = Object.keys(req.body);
   if (!keys.length) {
-    return next({ status: 400, msg: "bad request..." });
+    return next({ status: 400, msg: "Bad request...missing inc_votes" });
   }
   if (keys.length !== 1 || keys[0] !== "inc_votes") {
     return next({ status: 400, msg: "Unexpected field in request body" });

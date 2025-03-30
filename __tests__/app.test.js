@@ -716,7 +716,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("bad request...");
+        expect(msg).toBe("Bad request...missing inc_votes");
       });
   });
   test("400: Returns error if inc_votes is of wrong data type", () => {
