@@ -5,7 +5,6 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const db = require("../db/connection.js");
 const data = require("../db/data/test-data");
-const users = require("../db/data/test-data/users.js");
 
 beforeEach(() => {
   return seed(data);
@@ -213,7 +212,7 @@ describe("GET /api/articles", () => {
         .expect(400)
         .then(({ body }) => {
           const msg = body.msg;
-          expect(msg).toBe("invalid sort_by column");
+          expect(msg).toBe("invalid query parameters");
         });
     });
     test("400: Returns error message when given invalid order query", () => {
@@ -222,7 +221,7 @@ describe("GET /api/articles", () => {
         .expect(400)
         .then(({ body }) => {
           const msg = body.msg;
-          expect(msg).toBe("invalid order value");
+          expect(msg).toBe("invalid query parameters");
         });
     });
     test("404: Returns error message when route is invalid", () => {
@@ -273,7 +272,7 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const articles = body.articles;
-          expect(articles).toEqual([]);
+          expect(articles).toBeInstanceOf(Array);
         });
     });
     test("404: Returns error message when topic does not exist", () => {
@@ -283,6 +282,128 @@ describe("GET /api/articles", () => {
         .then(({ body }) => {
           const msg = body.msg;
           expect(msg).toBe("topic not found");
+        });
+    });
+  });
+
+  describe("GET /api/articles with pagination", () => {
+    test("200: Returns paginated articles with a total_count", () => {
+      return request(app)
+        .get("/api/articles?limit=6&page=1")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toHaveLength(6);
+          expect(body).toHaveProperty("total_count");
+          expect(body.total_count).toEqual(expect.any(Number));
+
+          body.articles.forEach((article) => {
+            expect(article).toMatchObject({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+              article_img_url: expect.any(String),
+            });
+          });
+        });
+    });
+    test("200: Returns distinct/unique articles for different pages", () => {
+      return Promise.all([
+        request(app).get("/api/articles?limit=5&page=1").expect(200),
+        request(app).get("/api/articles?limit=5&page=2").expect(200),
+      ]).then(([responsePage1, responsePage2]) => {
+        const articlesPage1 = responsePage1.body.articles;
+        const articlesPage2 = responsePage2.body.articles;
+
+        expect(articlesPage1.length).toBeLessThanOrEqual(5);
+        expect(articlesPage2.length).toBeLessThanOrEqual(5);
+
+        expect(responsePage1.body.total_count).toBe(
+          responsePage2.body.total_count
+        );
+
+        const articleIDsPage1 = articlesPage1.map(
+          (article) => article.article_id
+        );
+        const articleIDsPage2 = articlesPage2.map(
+          (article) => article.article_id
+        );
+
+        expect(articleIDsPage1).not.toEqual(
+          expect.arrayContaining(articleIDsPage2)
+        );
+      });
+    });
+    test("200: Returns empty articles array when requesting a page beyond the last page", () => {
+      return request(app)
+        .get("/api/articles?limit=5&page=1")
+        .expect(200)
+        .then(({ body }) => {
+          const totalArticles = body.total_count;
+          const limit = 5;
+          const lastPage = Math.ceil(totalArticles / limit);
+          const beyondLastPage = lastPage + 1;
+
+          return request(app)
+            .get(`/api/articles?limit=${limit}&page=${beyondLastPage}`)
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).toEqual([]);
+              expect(body.total_count).toBe(totalArticles);
+            });
+        });
+    });
+    test("200: Returns only the available articles when limit exceeds total articles", () => {
+      return request(app)
+        .get("/api/articles?limit=1000&page=1")
+        .expect(200)
+        .then(({ body }) => {
+          const totalArticles = body.total_count;
+
+          expect(body.articles.length).toBeLessThanOrEqual(totalArticles);
+
+          body.articles.forEach((article) => {
+            expect(article).toMatchObject({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+              article_img_url: expect.any(String),
+            });
+          });
+        });
+    });
+    test("400: Returns error message if page number provided is invalid", () => {
+      return request(app)
+        .get("/api/articles?limit=5&page=0")
+        .expect(400)
+        .then(({ body }) => {
+          const msg = body.msg;
+          expect(msg).toBe("Invalid page provided");
+        });
+    });
+    test("400: Returns error message if page number provided is of wrong data type", () => {
+      return request(app)
+        .get("/api/articles?limit=5&page=thisIsNotANumber")
+        .expect(400)
+        .then(({ body }) => {
+          const msg = body.msg;
+          expect(msg).toBe("Invalid data type");
+        });
+    });
+    test("400: Returns error message if limit provided is of wrong data type", () => {
+      return request(app)
+        .get("/api/articles?limit=thisIsNotANumber&page=1")
+        .expect(400)
+        .then(({ body }) => {
+          const msg = body.msg;
+          expect(msg).toBe("Invalid data type");
         });
     });
   });

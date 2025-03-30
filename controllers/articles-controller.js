@@ -1,12 +1,20 @@
 const model = require("../model/models");
 
 const getArticles = (req, res, next) => {
-  let { author, topic, sort_by, order } = req.query;
+  let { author, topic, sort_by, order, limit = 10, page = 1 } = req.query;
+
+  // Need to convert queries to number
+
+  page = Number(page);
+
+  if (page <= 0) {
+    return res.status(400).send({ msg: "Invalid page provided" });
+  }
 
   model
-    .fetchArticles(author, topic, sort_by, order)
-    .then((articles) => {
-      res.status(200).send({ articles: articles });
+    .fetchArticles(author, topic, sort_by, order, limit, page)
+    .then((responseArticles) => {
+      res.status(200).send(responseArticles);
     })
     .catch(next);
 };
@@ -42,6 +50,9 @@ const getArticleByArticleID = (req, res, next) => {
   model
     .fetchArticlebyArticleID(article_id)
     .then((article) => {
+      if (!article) {
+        return Promise.reject({ status: 404, msg: "article not found" });
+      }
       res.status(200).send({ article: article });
     })
     .catch(next);
@@ -52,6 +63,9 @@ const getCommentsByArticleID = (req, res, next) => {
   model
     .fetchCommentsByArticleID(article_id)
     .then((comments) => {
+      if (!comments.length) {
+        return Promise.reject({ status: 404, msg: "article not found" });
+      }
       res.status(200).send({ comments: comments });
     })
     .catch(next);
@@ -98,6 +112,12 @@ const patchVotesByArticleID = (req, res, next) => {
   model
     .updateVotesByArticleID(article_id, inc_votes)
     .then((article) => {
+      if (!article) {
+        return Promise.reject({
+          status: 404,
+          msg: "article not found",
+        });
+      }
       res.status(200).send({ article: article });
     })
     .catch(next);

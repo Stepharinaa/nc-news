@@ -54,7 +54,9 @@ const fetchArticles = (
   author,
   topic,
   sort_by = "created_at",
-  order = "DESC"
+  order = "DESC",
+  limit,
+  page
 ) => {
   const allowedSortByColumns = [
     "author",
@@ -68,12 +70,11 @@ const fetchArticles = (
   ];
   const allowedOrder = ["ASC", "DESC"];
 
-  if (!allowedSortByColumns.includes(sort_by)) {
-    return Promise.reject({ status: 400, msg: "invalid sort_by column" });
-  }
-
-  if (!allowedOrder.includes(order)) {
-    return Promise.reject({ status: 400, msg: "invalid order value" });
+  if (
+    !allowedSortByColumns.includes(sort_by) ||
+    !allowedOrder.includes(order)
+  ) {
+    return Promise.reject({ status: 400, msg: "invalid query parameters" });
   }
 
   let queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
@@ -120,12 +121,20 @@ const fetchArticles = (
         queryString += ` 
     GROUP BY articles.article_id
     ORDER BY articles.${sort_by} ${order}
+    LIMIT $${queryValues.length + 1} OFFSET $${queryValues.length + 2}
   `;
+
+        const offset = (page - 1) * limit;
+        queryValues.push(limit, offset);
 
         return db.query(queryString, queryValues);
       })
       .then(({ rows }) => {
-        return rows;
+        return db
+          .query(`SELECT CAST(COUNT(*) AS INT) AS total_count FROM articles;`)
+          .then(({ rows: countRows }) => {
+            return { articles: rows, total_count: countRows[0].total_count };
+          });
       });
   });
 };
@@ -134,7 +143,7 @@ const fetchArticlebyArticleID = (article_id) => {
   return db
     .query(
       `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.body, articles.created_at, articles.votes, articles.article_img_url,
-      COUNT (comments.comment_id) AS comment_count
+      CAST(COUNT(comments.comment_id) AS INT) AS comment_count
       FROM articles
       LEFT JOIN comments ON articles.article_id = comments.article_id
       WHERE articles.article_id = $1
@@ -142,10 +151,6 @@ const fetchArticlebyArticleID = (article_id) => {
       [article_id]
     )
     .then(({ rows }) => {
-      if (!rows.length) {
-        return Promise.reject({ status: 404, msg: "article not found" });
-      }
-      rows[0].comment_count = Number(rows[0].comment_count);
       return rows[0];
     });
 };
@@ -157,9 +162,6 @@ const fetchCommentsByArticleID = (article_id) => {
       [article_id]
     )
     .then(({ rows }) => {
-      if (!rows.length) {
-        return Promise.reject({ status: 404, msg: "article not found" });
-      }
       return rows;
     });
 };
@@ -201,24 +203,13 @@ const insertCommentByArticleID = (article_id, username, body) => {
 
 const updateVotesByArticleID = (article_id, inc_votes) => {
   return db
-    .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
-    .then(({ rows }) => {
-      if (!rows.length) {
-        return Promise.reject({
-          status: 404,
-          msg: "article not found",
-        });
-      }
-    })
-    .then(() => {
-      return db.query(
-        `UPDATE articles
+    .query(
+      `UPDATE articles
     SET votes = votes + $1 
     WHERE article_id = $2 
     RETURNING *;`,
-        [inc_votes, article_id]
-      );
-    })
+      [inc_votes, article_id]
+    )
     .then(({ rows }) => {
       return rows[0];
     });
@@ -244,12 +235,6 @@ const removeCommentbyCommentID = (comment_id) => {
       comment_id,
     ])
     .then(({ rows }) => {
-      if (!rows.length) {
-        return Promise.reject({
-          status: 404,
-          msg: "comment id does not exist",
-        });
-      }
       return rows[0];
     });
 };
@@ -264,9 +249,6 @@ const fetchUserByUsername = (username) => {
   return db
     .query(`SELECT * FROM users WHERE username = $1`, [username])
     .then(({ rows }) => {
-      if (!rows.length) {
-        return Promise.reject({ status: 404, msg: "username not found..." });
-      }
       return rows[0];
     });
 };
