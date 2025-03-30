@@ -611,7 +611,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("comment could not be added as field(s) are missing");
+        expect(msg).toBe("Bad Request: Missing required fields...");
       });
   });
   test("404: Returns error when article id does not exist", () => {
