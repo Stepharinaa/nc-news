@@ -84,6 +84,17 @@ describe("POST /api/topics", () => {
           });
       });
   });
+  test("400: Responds with error message if slug and/or description is not provided", () => {
+    const input = {};
+    return request(app)
+      .post("/api/topics")
+      .send(input)
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("Bad Request: Missing required fields...");
+      });
+  });
 });
 
 describe("GET /api/articles", () => {
