@@ -95,6 +95,28 @@ describe("POST /api/topics", () => {
         expect(msg).toBe("Bad Request: Missing required fields...");
       });
   });
+  test("409: Responds with error if slug already exists", () => {
+    const input = {
+      slug: "Dead by Daylight Tips",
+      description:
+        "Wanna GIT GUD and become a DbD Pro? You're in the right place",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(input)
+      .expect(201)
+      .then(() => {
+        return request(app)
+          .post("/api/topics")
+          .send(input)
+          .expect(409)
+          .then(({ body }) => {
+            expect(body.msg).toBe(
+              "Conflict: Value already exists/cannot insert duplicate value"
+            );
+          });
+      });
+  });
 });
 
 describe("GET /api/articles", () => {
