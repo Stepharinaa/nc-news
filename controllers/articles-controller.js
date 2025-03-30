@@ -95,7 +95,7 @@ const patchVotesByArticleID = (req, res, next) => {
     return next({ status: 400, msg: "bad request..." });
   }
   if (keys.length !== 1 || keys[0] !== "inc_votes") {
-    return next({ status: 400, msg: "unexpected field in request body" });
+    return next({ status: 400, msg: "Unexpected field in request body" });
   }
 
   const { article_id } = req.params;

@@ -738,7 +738,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("unexpected field in request body");
+        expect(msg).toBe("Unexpected field in request body");
       });
   });
 });
