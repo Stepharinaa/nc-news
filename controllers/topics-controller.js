@@ -9,4 +9,14 @@ const getTopics = (req, res, next) => {
     .catch(next);
 };
 
-module.exports = { getTopics };
+const postTopic = (req, res, next) => {
+  let { slug, description } = req.body;
+  model
+    .insertTopic(slug, description)
+    .then((topic) => {
+      res.status(201).send({ topic: topic });
+    })
+    .catch(next);
+};
+
+module.exports = { getTopics, postTopic };

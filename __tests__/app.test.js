@@ -1,5 +1,5 @@
 const endpointsJson = require("../endpoints.json");
-/* Set up your test imports here */
+
 const request = require("supertest");
 const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
@@ -47,6 +47,74 @@ describe("GET /api/topics", () => {
       .then(({ body }) => {
         const msg = body.msg;
         expect(msg).toBe("path not found...");
+      });
+  });
+});
+
+describe("POST /api/topics", () => {
+  test("201: Responds with topic object containing newly added topic", () => {
+    const input = {
+      slug: "Studio Ghibli",
+      description: "All things Ghibli related!",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(input)
+      .expect(201)
+      .then(({ body }) => {
+        const topic = body.topic;
+        expect(topic).toHaveProperty("slug", "Studio Ghibli");
+        expect(topic).toHaveProperty(
+          "description",
+          "All things Ghibli related!"
+        );
+        return request(app)
+          .get("/api/topics")
+          .expect(200)
+          .then(({ body }) => {
+            const topics = body.topics;
+            const addedTopic = topics.find(
+              (topic) => topic.slug === "Studio Ghibli"
+            );
+            expect(addedTopic).toHaveProperty("slug", "Studio Ghibli");
+            expect(addedTopic).toHaveProperty(
+              "description",
+              "All things Ghibli related!"
+            );
+          });
+      });
+  });
+  test("400: Responds with error message if slug and/or description is not provided", () => {
+    const input = {};
+    return request(app)
+      .post("/api/topics")
+      .send(input)
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("Bad Request: Missing required fields...");
+      });
+  });
+  test("409: Responds with error if slug already exists", () => {
+    const input = {
+      slug: "Dead by Daylight Tips",
+      description:
+        "Wanna GIT GUD and become a DbD Pro? You're in the right place",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(input)
+      .expect(201)
+      .then(() => {
+        return request(app)
+          .post("/api/topics")
+          .send(input)
+          .expect(409)
+          .then(({ body }) => {
+            expect(body.msg).toBe(
+              "Conflict: Value already exists/cannot insert duplicate value"
+            );
+          });
       });
   });
 });
