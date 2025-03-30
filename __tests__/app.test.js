@@ -356,6 +356,29 @@ describe("GET /api/articles", () => {
             });
         });
     });
+    test("200: Returns only the available articles when limit exceeds total articles", () => {
+      return request(app)
+        .get("/api/articles?limit=1000&page=1")
+        .expect(200)
+        .then(({ body }) => {
+          const totalArticles = body.total_count;
+
+          expect(body.articles.length).toBeLessThanOrEqual(totalArticles);
+
+          body.articles.forEach((article) => {
+            expect(article).toMatchObject({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+              article_img_url: expect.any(String),
+            });
+          });
+        });
+    });
     test("400: Returns error message if page number provided is invalid", () => {
       return request(app)
         .get("/api/articles?limit=5&page=0")
