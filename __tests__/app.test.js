@@ -727,7 +727,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("inc_votes must be a number");
+        expect(msg).toBe("Invalid data type");
       });
   });
   test("400: Returns error if request body has additional/unwanted fields", () => {
