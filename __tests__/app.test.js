@@ -744,8 +744,27 @@ describe("PATCH /api/articles/:article_id", () => {
 });
 
 describe("DELETE /api/articles/:article_id", () => {
-  test("Deletes the article based on article ID and its respective comments", () => {
-    return request(app).delete("/api/articles/1").expect(204);
+  test("Deletes the article based on article ID and its respective comments and responds with no content", () => {
+    return request(app)
+      .delete("/api/articles/1")
+      .expect(204)
+      .then(() => {
+        return request(app)
+          .get("/api/articles/1")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("article not found");
+          });
+      });
+  });
+  test("404: Returns error if article_id does not exist", () => {
+    return request(app)
+      .delete("/api/articles/-100")
+      .expect(404)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("Article does not exist");
+      });
   });
 });
 
