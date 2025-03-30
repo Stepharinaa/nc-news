@@ -13,6 +13,7 @@ const insertTopic = (slug, description) => {
       [slug, description]
     )
     .then(({ rows }) => {
+      console.log(rows, "<-- THIS IS ROWS");
       return rows[0];
     });
 };
