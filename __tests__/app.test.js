@@ -766,6 +766,15 @@ describe("DELETE /api/articles/:article_id", () => {
         expect(msg).toBe("Article does not exist");
       });
   });
+  test("400: Returns error is article_id is invalid format", () => {
+    return request(app)
+      .delete("/api/articles/notANumber")
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("Invalid data type");
+      });
+  });
 });
 
 describe("PATCH /api/comments/:comment_id", () => {
