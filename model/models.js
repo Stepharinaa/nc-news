@@ -6,6 +6,18 @@ const fetchTopics = () => {
   });
 };
 
+const insertTopic = (slug, description) => {
+  return db
+    .query(
+      `INSERT INTO topics (slug, description) VALUES ($1, $2) RETURNING*`,
+      [slug, description]
+    )
+    .then(({ rows }) => {
+      console.log(rows, "<-- THIS IS ROWS");
+      return rows[0];
+    });
+};
+
 const insertArticle = (author, title, body, topic, article_img_url) => {
   if (!article_img_url) {
     article_img_url =
@@ -255,6 +267,7 @@ const fetchUserByUsername = (username) => {
 
 module.exports = {
   fetchTopics,
+  insertTopic,
   fetchArticlebyArticleID,
   fetchArticles,
   insertArticle,
