@@ -1,5 +1,5 @@
 const endpointsJson = require("../endpoints.json");
-/* Set up your test imports here */
+
 const request = require("supertest");
 const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
@@ -47,6 +47,41 @@ describe("GET /api/topics", () => {
       .then(({ body }) => {
         const msg = body.msg;
         expect(msg).toBe("path not found...");
+      });
+  });
+});
+
+describe("POST /api/topics", () => {
+  test("201: Responds with topic object containing newly added topic", () => {
+    const input = {
+      slug: "Studio Ghibli",
+      description: "All things Ghibli related!",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(input)
+      .expect(201)
+      .then(({ body }) => {
+        const topic = body.topic;
+        expect(topic).toHaveProperty("slug", "Studio Ghibli");
+        expect(topic).toHaveProperty(
+          "description",
+          "All things Ghibli related!"
+        );
+        return request(app)
+          .get("/api/topics")
+          .expect(200)
+          .then(({ body }) => {
+            const topics = body.topics;
+            const addedTopic = topics.find(
+              (topic) => topic.slug === "Studio Ghibli"
+            );
+            expect(addedTopic).toHaveProperty("slug", "Studio Ghibli");
+            expect(addedTopic).toHaveProperty(
+              "description",
+              "All things Ghibli related!"
+            );
+          });
       });
   });
 });
