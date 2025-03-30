@@ -3,6 +3,14 @@ const model = require("../model/models");
 const getArticles = (req, res, next) => {
   let { author, topic, sort_by, order, limit = 10, page = 1 } = req.query;
 
+  // Need to convert queries to number
+
+  page = Number(page);
+
+  if (page <= 0) {
+    return res.status(400).send({ msg: "Invalid page provided" });
+  }
+
   model
     .fetchArticles(author, topic, sort_by, order, limit, page)
     .then((responseArticles) => {
