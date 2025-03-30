@@ -337,6 +337,25 @@ describe("GET /api/articles", () => {
         );
       });
     });
+    test("200: Returns empty articles array when requesting a page beyond the last page", () => {
+      return request(app)
+        .get("/api/articles?limit=5&page=1")
+        .expect(200)
+        .then(({ body }) => {
+          const totalArticles = body.total_count;
+          const limit = 5;
+          const lastPage = Math.ceil(totalArticles / limit);
+          const beyondLastPage = lastPage + 1;
+
+          return request(app)
+            .get(`/api/articles?limit=${limit}&page=${beyondLastPage}`)
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).toEqual([]);
+              expect(body.total_count).toBe(totalArticles);
+            });
+        });
+    });
     test("400: Returns error message if page number provided is invalid", () => {
       return request(app)
         .get("/api/articles?limit=5&page=0")
@@ -344,6 +363,15 @@ describe("GET /api/articles", () => {
         .then(({ body }) => {
           const msg = body.msg;
           expect(msg).toBe("Invalid page provided");
+        });
+    });
+    test("400: Returns error message if page number provided is of wrong data type", () => {
+      return request(app)
+        .get("/api/articles?limit=5&page=thisIsNotANumber")
+        .expect(400)
+        .then(({ body }) => {
+          const msg = body.msg;
+          expect(msg).toBe("Invalid data type");
         });
     });
   });
