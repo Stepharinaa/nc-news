@@ -58,6 +58,16 @@ const getArticleByArticleID = (req, res, next) => {
     .catch(next);
 };
 
+const deleteArticleByArticleID = (req, res, next) => {
+  const { article_id } = req.params;
+  model
+    .removeArticleByArticleID(article_id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch(next);
+};
+
 const getCommentsByArticleID = (req, res, next) => {
   const { article_id } = req.params;
   model
@@ -117,6 +127,7 @@ const patchVotesByArticleID = (req, res, next) => {
 module.exports = {
   getArticleByArticleID,
   getArticles,
+  deleteArticleByArticleID,
   getCommentsByArticleID,
   postCommentByArticleID,
   patchVotesByArticleID,

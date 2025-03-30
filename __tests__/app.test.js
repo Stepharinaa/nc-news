@@ -743,6 +743,12 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
+describe("DELETE /api/articles/:article_id", () => {
+  test("Deletes the article based on article ID and its respective comments", () => {
+    return request(app).delete("/api/articles/1").expect(204);
+  });
+});
+
 describe("PATCH /api/comments/:comment_id", () => {
   test("200: Updates votes on a comment on relevant comment id", () => {
     const input = { inc_votes: 25 };
