@@ -62,7 +62,10 @@ const deleteArticleByArticleID = (req, res, next) => {
   const { article_id } = req.params;
   model
     .removeArticleByArticleID(article_id)
-    .then(() => {
+    .then((article) => {
+      if (!article) {
+        return Promise.reject({ status: 404, msg: "Article does not exist" });
+      }
       res.status(204).send();
     })
     .catch(next);
