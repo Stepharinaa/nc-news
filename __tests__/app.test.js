@@ -337,6 +337,15 @@ describe("GET /api/articles", () => {
         );
       });
     });
+    test("400: Returns error message if page number provided is invalid", () => {
+      return request(app)
+        .get("/api/articles?limit=5&page=0")
+        .expect(400)
+        .then(({ body }) => {
+          const msg = body.msg;
+          expect(msg).toBe("Invalid page provided");
+        });
+    });
   });
 
   describe("GET /api/articles/:articleid", () => {
