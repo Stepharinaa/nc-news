@@ -397,6 +397,15 @@ describe("GET /api/articles", () => {
           expect(msg).toBe("Invalid data type");
         });
     });
+    test("400: Returns error message if limit provided is of wrong data type", () => {
+      return request(app)
+        .get("/api/articles?limit=thisIsNotANumber&page=1")
+        .expect(400)
+        .then(({ body }) => {
+          const msg = body.msg;
+          expect(msg).toBe("Invalid data type");
+        });
+    });
   });
 
   describe("GET /api/articles/:articleid", () => {
