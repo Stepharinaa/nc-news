@@ -51,7 +51,7 @@ const getArticleByArticleID = (req, res, next) => {
     .fetchArticlebyArticleID(article_id)
     .then((article) => {
       if (!article) {
-        return Promise.reject({ status: 404, msg: "article not found" });
+        return Promise.reject({ status: 404, msg: "Article not found" });
       }
       res.status(200).send({ article: article });
     })
@@ -77,7 +77,7 @@ const getCommentsByArticleID = (req, res, next) => {
     .fetchCommentsByArticleID(article_id)
     .then((comments) => {
       if (!comments.length) {
-        return Promise.reject({ status: 404, msg: "article not found" });
+        return Promise.reject({ status: 404, msg: "Article not found" });
       }
       res.status(200).send({ comments: comments });
     })
@@ -119,7 +119,7 @@ const patchVotesByArticleID = (req, res, next) => {
       if (!article) {
         return Promise.reject({
           status: 404,
-          msg: "article not found",
+          msg: "Article not found",
         });
       }
       res.status(200).send({ article: article });
