@@ -51,9 +51,22 @@ const getArticleByArticleID = (req, res, next) => {
     .fetchArticlebyArticleID(article_id)
     .then((article) => {
       if (!article) {
-        return Promise.reject({ status: 404, msg: "article not found" });
+        return Promise.reject({ status: 404, msg: "Article not found" });
       }
       res.status(200).send({ article: article });
+    })
+    .catch(next);
+};
+
+const deleteArticleByArticleID = (req, res, next) => {
+  const { article_id } = req.params;
+  model
+    .removeArticleByArticleID(article_id)
+    .then((article) => {
+      if (!article) {
+        return Promise.reject({ status: 404, msg: "Article does not exist" });
+      }
+      res.status(204).send();
     })
     .catch(next);
 };
@@ -64,7 +77,7 @@ const getCommentsByArticleID = (req, res, next) => {
     .fetchCommentsByArticleID(article_id)
     .then((comments) => {
       if (!comments.length) {
-        return Promise.reject({ status: 404, msg: "article not found" });
+        return Promise.reject({ status: 404, msg: "Article not found" });
       }
       res.status(200).send({ comments: comments });
     })
@@ -92,10 +105,10 @@ const postCommentByArticleID = (req, res, next) => {
 const patchVotesByArticleID = (req, res, next) => {
   const keys = Object.keys(req.body);
   if (!keys.length) {
-    return next({ status: 400, msg: "bad request..." });
+    return next({ status: 400, msg: "Bad request...missing inc_votes" });
   }
   if (keys.length !== 1 || keys[0] !== "inc_votes") {
-    return next({ status: 400, msg: "unexpected field in request body" });
+    return next({ status: 400, msg: "Unexpected field in request body" });
   }
 
   const { article_id } = req.params;
@@ -106,7 +119,7 @@ const patchVotesByArticleID = (req, res, next) => {
       if (!article) {
         return Promise.reject({
           status: 404,
-          msg: "article not found",
+          msg: "Article not found",
         });
       }
       res.status(200).send({ article: article });
@@ -117,6 +130,7 @@ const patchVotesByArticleID = (req, res, next) => {
 module.exports = {
   getArticleByArticleID,
   getArticles,
+  deleteArticleByArticleID,
   getCommentsByArticleID,
   postCommentByArticleID,
   patchVotesByArticleID,

@@ -511,7 +511,7 @@ describe("GET /api/articles", () => {
         .expect(404)
         .then(({ body }) => {
           const msg = body.msg;
-          expect(msg).toBe("article not found");
+          expect(msg).toBe("Article not found");
         });
     });
     test("400: Returns error when article ID is not a number", () => {
@@ -561,7 +561,7 @@ describe("GET /api/articles/:articleid/comments", () => {
       .expect(404)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("article not found");
+        expect(msg).toBe("Article not found");
       });
   });
   test("400: Returns error message when article_id is of wrong data type", () => {
@@ -625,7 +625,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("article not found");
+        expect(msg).toBe("Article not found");
       });
   });
   test("400: Returns error when username does not exist - ensures only valid users can post comments", () => {
@@ -705,7 +705,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(404)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("article not found");
+        expect(msg).toBe("Article not found");
       });
   });
   test("400: Returns error when request body does not contain inc_votes", () => {
@@ -716,7 +716,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("bad request...");
+        expect(msg).toBe("Bad request...missing inc_votes");
       });
   });
   test("400: Returns error if inc_votes is of wrong data type", () => {
@@ -738,7 +738,63 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const msg = body.msg;
-        expect(msg).toBe("unexpected field in request body");
+        expect(msg).toBe("Unexpected field in request body");
+      });
+  });
+});
+
+describe("DELETE /api/articles/:article_id", () => {
+  test("204: Deletes the article based on article ID and responds with no content", () => {
+    return request(app)
+      .delete("/api/articles/1")
+      .expect(204)
+      .then(() => {
+        return request(app)
+          .get("/api/articles/1")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Article not found");
+          });
+      });
+  });
+  test("204: Deletes relevant article AND all comments associated with it", () => {
+    const article_id = 1;
+    const comment = {
+      username: "butter_bridge",
+      body: "Hey! It's me, Butter Bridge :))",
+    };
+    return request(app)
+      .post(`/api/articles/${article_id}/comments`)
+      .send(comment)
+      .expect(201)
+      .then(() => {
+        return request(app).delete(`/api/articles/${article_id}`).expect(204);
+      })
+      .then(() => {
+        return request(app)
+          .get(`/api/articles/${article_id}/comments`)
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Article not found");
+          });
+      });
+  });
+  test("404: Returns error if article_id does not exist", () => {
+    return request(app)
+      .delete("/api/articles/-100")
+      .expect(404)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("Article does not exist");
+      });
+  });
+  test("400: Returns error is article_id is invalid format", () => {
+    return request(app)
+      .delete("/api/articles/notANumber")
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body.msg;
+        expect(msg).toBe("Invalid data type");
       });
   });
 });

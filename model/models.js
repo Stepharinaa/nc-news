@@ -150,6 +150,16 @@ const fetchArticles = (
   });
 };
 
+const removeArticleByArticleID = (article_id) => {
+  return db
+    .query(`DELETE FROM articles WHERE article_id = $1 RETURNING*`, [
+      article_id,
+    ])
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
 const fetchArticlebyArticleID = (article_id) => {
   return db
     .query(
@@ -184,7 +194,7 @@ const insertCommentByArticleID = (article_id, username, body) => {
       if (!rows.length) {
         return Promise.reject({
           status: 404,
-          msg: "article not found",
+          msg: "Article not found",
         });
       }
     })
@@ -270,6 +280,7 @@ module.exports = {
   fetchArticlebyArticleID,
   fetchArticles,
   insertArticle,
+  removeArticleByArticleID,
   fetchCommentsByArticleID,
   insertCommentByArticleID,
   updateVotesByArticleID,
