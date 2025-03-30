@@ -5,6 +5,12 @@ const handlePSQLErrors = (err, req, res, next) => {
     res.status(404).send({ msg: "Not found: Foreign key violation..." });
   } else if (err.code === "23502") {
     res.status(400).send({ msg: "Bad Request: Missing required fields..." });
+  } else if (err.code === "23505") {
+    res
+      .status(409)
+      .send({
+        msg: "Conflict: Value already exists/cannot insert duplicate value",
+      });
   } else {
     next(err);
   }
