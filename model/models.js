@@ -194,7 +194,7 @@ const insertCommentByArticleID = (article_id, username, body) => {
       if (!rows.length) {
         return Promise.reject({
           status: 404,
-          msg: "article not found",
+          msg: "Article not found",
         });
       }
     })
