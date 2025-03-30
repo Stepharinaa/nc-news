@@ -75,12 +75,6 @@ const postCommentByArticleID = (req, res, next) => {
   const { article_id } = req.params;
   const { username, body } = req.body;
 
-  if (!username || !body) {
-    return next({
-      status: 400,
-      msg: "comment could not be added as field(s) are missing",
-    });
-  }
   model
     .insertCommentByArticleID(article_id, username, body)
     .then((comment) => {
