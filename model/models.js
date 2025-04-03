@@ -131,7 +131,9 @@ const fetchArticles = (
 
         queryString += ` 
     GROUP BY articles.article_id
-    ORDER BY articles.${sort_by} ${order}
+    ORDER BY ${
+      sort_by === "comment_count" ? "comment_count" : `articles.${sort_by}`
+    } ${order}
     LIMIT $${queryValues.length + 1} OFFSET $${queryValues.length + 2}
   `;
 
