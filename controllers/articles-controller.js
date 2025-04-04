@@ -1,7 +1,7 @@
 const model = require("../model/models");
 
 const getArticles = (req, res, next) => {
-  let { author, topic, sort_by, order, limit = 10, page = 1 } = req.query;
+  let { author, topic, sort_by, order, limit, page } = req.query;
 
   // Need to convert queries to number
 
