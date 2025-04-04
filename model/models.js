@@ -134,11 +134,14 @@ const fetchArticles = (
     ORDER BY ${
       sort_by === "comment_count" ? "comment_count" : `articles.${sort_by}`
     } ${order}
-    LIMIT $${queryValues.length + 1} OFFSET $${queryValues.length + 2}
   `;
-
-        const offset = (page - 1) * limit;
-        queryValues.push(limit, offset);
+        if (limit !== undefined && page !== undefined) {
+          const offset = (page - 1) * limit;
+          queryString += ` LIMIT $${queryValues.length + 1} OFFSET $${
+            queryValues.length + 2
+          }`;
+          queryValues.push(limit, offset);
+        }
 
         return db.query(queryString, queryValues);
       })
